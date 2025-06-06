@@ -1,4 +1,5 @@
 import * as React from "react";
+import "./global.css"; // Import global styles
 import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 import HomeScreen from "./screens/HomeScreen";
