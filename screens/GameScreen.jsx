@@ -1,16 +1,17 @@
-import {useState} from "react";
-import {View, ImageBackground, TouchableOpacity, Text} from "react-native";
+import { use, useState } from "react";
+import { View, ImageBackground, TouchableOpacity, Text } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import GameMenuModal from "../components/GameMenuModal";
 import ShopMenuModal from "../components/ShopMenuModal";
-import {handleBackConfirmation} from "../utils/handleBackConfirmation";
+import { handleBackConfirmation } from "../utils/handleBackConfirmation";
+import { useCoins } from "../context/CoinsContext"; // Importing the Coins context
 
-export default function GameScreen({navigation}) {
+export default function GameScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [shopModalVisible, setShopModalVisible] = useState(false);
 
   // Hårdkodad poäng för synlighetens skull
-  const coins = 2500;
+  const coins = useCoins().coins; // Using the coins from context
 
   return (
     <ImageBackground
@@ -30,7 +31,7 @@ export default function GameScreen({navigation}) {
               name="coins"
               size={16}
               color="#FFC107"
-              style={{marginLeft: 5}}
+              style={{ marginLeft: 5 }}
             />
             <Text className="text-yellow-400 font-bold text-left text-base">
               {coins}

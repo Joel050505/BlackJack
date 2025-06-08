@@ -1,8 +1,21 @@
 import React from "react";
-import {Text, View, Modal, TouchableOpacity, ScrollView} from "react-native";
-import {Ionicons} from "@expo/vector-icons";
+import { Text, View, Modal, TouchableOpacity, ScrollView } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useCoins } from "../context/CoinsContext";
 
-export default function ShopMenuModal({visible, onClose}) {
+export default function ShopMenuModal({ visible, onClose }) {
+  const { coins, addCoins } = useCoins();
+
+  const handleFreeCoins = (amount) => {
+    // Logic to handle free coins
+    // Set confirmation to true to prevent further claims
+
+    addCoins(amount); // Add the specified amount of coins
+
+    onClose(); // Close the modal after claiming
+    alert(`You have claimed ${amount} free coins!`);
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -36,7 +49,57 @@ export default function ShopMenuModal({visible, onClose}) {
                 </View>
                 <TouchableOpacity
                   className="bg-green-600 px-4 py-2 rounded-lg"
-                  onPress={() => {}}
+                  onPress={() => {
+                    handleFreeCoins(250);
+                  }}
+                >
+                  <Text className="text-white font-bold">FREE</Text>
+                </TouchableOpacity>
+              </View>
+              <View className="bg-gray-700 rounded-xl p-4 flex-row justify-between items-center mt-4">
+                <View>
+                  <Text className="text-white font-bold text-lg">
+                    Free Coins
+                  </Text>
+                  <Text className="text-green-400">500 coins</Text>
+                </View>
+                <TouchableOpacity
+                  className="bg-green-600 px-4 py-2 rounded-lg"
+                  onPress={() => {
+                    handleFreeCoins(500);
+                  }}
+                >
+                  <Text className="text-white font-bold">FREE</Text>
+                </TouchableOpacity>
+              </View>
+              <View className="bg-gray-700 rounded-xl mt-4 p-4 flex-row justify-between items-center">
+                <View>
+                  <Text className="text-white font-bold text-lg">
+                    Free Coins
+                  </Text>
+                  <Text className="text-green-400">750 coins</Text>
+                </View>
+                <TouchableOpacity
+                  className="bg-green-600 px-4 py-2 rounded-lg"
+                  onPress={() => {
+                    handleFreeCoins(750);
+                  }}
+                >
+                  <Text className="text-white font-bold">FREE</Text>
+                </TouchableOpacity>
+              </View>
+              <View className="bg-gray-700 rounded-xl p-4 flex-row justify-between items-center mt-4">
+                <View>
+                  <Text className="text-white font-bold text-lg">
+                    Free Coins
+                  </Text>
+                  <Text className="text-green-400">1000 coins</Text>
+                </View>
+                <TouchableOpacity
+                  className="bg-green-600 px-4 py-2 rounded-lg"
+                  onPress={() => {
+                    handleFreeCoins(1000);
+                  }}
                 >
                   <Text className="text-white font-bold">FREE</Text>
                 </TouchableOpacity>
