@@ -5,10 +5,10 @@ import {
   Animated,
   TouchableOpacity,
 } from "react-native";
-import { useEffect, useRef } from "react";
-import { StatusBar } from "expo-status-bar";
+import {useEffect, useRef} from "react";
+import {StatusBar} from "expo-status-bar";
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({navigation}) {
   // Animation value for bouncing text
   const bounceAnim = useRef(new Animated.Value(0)).current;
 
@@ -39,12 +39,9 @@ export default function HomeScreen({ navigation }) {
       <Animated.View
         className="flex-1 items-center justify-center"
         style={{
-          transform: [{ translateY: bounceAnim }],
+          transform: [{translateY: bounceAnim}],
         }}
       >
-        {/* <Text className="text-white text-5xl font-bold text-center p-5">
-          Welcome To{"\n"}Black Jack{"\n"}Bonus Fiesta
-        </Text> */}
         <View className="items-center">
           <Text className="text-green-600 text-4xl font-bold text-center mb-1 tracking-wider">
             Welcome To
