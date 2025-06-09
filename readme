@@ -1,13 +1,16 @@
 Todolist - för vad vi ska göra i projeketet.
 
-1. Hit or Stand knapp.
-2. Eventuellt byta bakgrunds bild till första sidan bilden tar över för mycket och man tappar fokus från själva spelets namn,
-samt byta färgen då det är för olika färger. (Kanske byta font till "Bebas Neue")
-3. 
-4. 
+
+Todos
+
+1. Funktionalitet för spelets logic (viktigast)
+2. 
+3. Ta bort mynt efter bet and tryggt deal
+4. Få tillbaka mynt om vunnit, annars ta bort ifall man förlorar (blackjack = 2.25 insatsen) (samma tal = +- 0)
 5.
-6.
+6. När man vinner kommer en modal upp som visar hur mycket man vunnit och gratulation
 7.
-8.
-9.
-10.
+8.Fungerande Hit or Stand knappar.
+9. Lägg till ljud effekt när man klickar på ett chip
+10. Eventuellt byta bakgrunds bild till första sidan bilden tar över för mycket och man tappar fokus från själva spelets namn,
+samt byta färgen då det är för olika färger. (Kanske byta font till "Bebas Neue")

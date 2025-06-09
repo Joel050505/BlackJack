@@ -1,4 +1,4 @@
-import {TouchableOpacity, View, Text} from "react-native";
+import { TouchableOpacity, View, Text } from "react-native";
 
 export default function BettingChip({
   value,
@@ -22,7 +22,7 @@ export default function BettingChip({
         justifyContent: "center",
         alignItems: "center",
         shadowColor: "#000",
-        shadowOffset: {width: 0, height: 3},
+        shadowOffset: { width: 0, height: 3 },
         shadowOpacity: disabled ? 0.1 : 0.3,
         shadowRadius: 5,
         elevation: disabled ? 2 : 6,
@@ -45,7 +45,7 @@ export default function BettingChip({
           fontSize: 16,
           fontWeight: "bold",
           textShadowColor: "rgba(0, 0, 0, 0.5)",
-          textShadowOffset: {width: 1, height: 1},
+          textShadowOffset: { width: 1, height: 1 },
           textShadowRadius: 2,
         }}
       >

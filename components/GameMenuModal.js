@@ -1,7 +1,18 @@
-import {Text, View, Modal, TouchableOpacity} from "react-native";
-import {Ionicons} from "@expo/vector-icons";
+import { Text, View, Modal, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-export default function GameMenuModal({visible, onClose, onBackToMenu}) {
+export default function GameMenuModal({
+  visible,
+  onClose,
+  onBackToMenu,
+  setIsPlaying,
+  setCurrentBet,
+  setSecondCard,
+  setCurrentCard,
+  getRandomCard,
+  setComputerCard,
+  setComputerSecondCard,
+}) {
   return (
     <Modal
       animationType="slide"
@@ -31,6 +42,26 @@ export default function GameMenuModal({visible, onClose, onBackToMenu}) {
             <View className="flex-row items-center justify-center">
               <Text className="text-white font-bold text-lg ml-2">
                 Continue Playing
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* Quit Game button */}
+          <TouchableOpacity
+            className="bg-orange-500 py-2 rounded-lg mb-4 w-full items-center"
+            onPress={() => {
+              setIsPlaying(false);
+              onClose();
+              setCurrentBet(0);
+              setSecondCard(getRandomCard());
+              setCurrentCard(getRandomCard());
+              setComputerCard(getRandomCard());
+              setComputerSecondCard(getRandomCard());
+            }}
+          >
+            <View className="flex-row items-center justify-center">
+              <Text className="text-white font-bold text-lg ml-2">
+                Quit Game
               </Text>
             </View>
           </TouchableOpacity>

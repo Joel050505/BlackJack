@@ -1,7 +1,13 @@
-import {View, TouchableOpacity, Text} from "react-native";
+import { View, TouchableOpacity, Text } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
-export function BettingControls({setCurrentBet, resetBet, currentBet, coins}) {
+export function BettingControls({
+  setCurrentBet,
+  resetBet,
+  currentBet,
+  coins,
+  handleDeal,
+}) {
   return (
     <View className="flex-row justify-between items-center mb-3 gap-3">
       <TouchableOpacity
@@ -9,7 +15,7 @@ export function BettingControls({setCurrentBet, resetBet, currentBet, coins}) {
         className="bg-green-600 px-6 py-3 rounded-xl flex-1 items-center"
         style={{
           shadowColor: "#000",
-          shadowOffset: {width: 0, height: 2},
+          shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.25,
           shadowRadius: 4,
           elevation: 5,
@@ -28,7 +34,7 @@ export function BettingControls({setCurrentBet, resetBet, currentBet, coins}) {
         }`}
         style={{
           shadowColor: "#000",
-          shadowOffset: {width: 0, height: 2},
+          shadowOffset: { width: 0, height: 2 },
           shadowOpacity: currentBet > 0 ? 0.25 : 0.1,
           shadowRadius: 4,
           elevation: currentBet > 0 ? 5 : 2,
@@ -53,7 +59,7 @@ export function BettingControls({setCurrentBet, resetBet, currentBet, coins}) {
   );
 }
 
-export function GameplayControls({onHit, onStand, onDeal, isPlaying}) {
+export function GameplayControls({ onHit, onStand, isPlaying, onDeal }) {
   return (
     <View className="flex-row justify-between items-center gap-2">
       {isPlaying ? (
@@ -63,7 +69,7 @@ export function GameplayControls({onHit, onStand, onDeal, isPlaying}) {
             className="bg-blue-600 px-4 py-3 rounded-xl flex-1 items-center"
             style={{
               shadowColor: "#000",
-              shadowOffset: {width: 0, height: 2},
+              shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.25,
               shadowRadius: 4,
               elevation: 5,
@@ -77,7 +83,7 @@ export function GameplayControls({onHit, onStand, onDeal, isPlaying}) {
             className="bg-orange-600 px-4 py-3 rounded-xl flex-1 items-center"
             style={{
               shadowColor: "#000",
-              shadowOffset: {width: 0, height: 2},
+              shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.25,
               shadowRadius: 4,
               elevation: 5,
@@ -92,7 +98,7 @@ export function GameplayControls({onHit, onStand, onDeal, isPlaying}) {
           className="bg-purple-600 px-4 py-3 rounded-xl flex-1 items-center"
           style={{
             shadowColor: "#000",
-            shadowOffset: {width: 0, height: 2},
+            shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.25,
             shadowRadius: 4,
             elevation: 5,
