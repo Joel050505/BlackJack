@@ -1,5 +1,5 @@
-import {Text, View, Modal, TouchableOpacity} from "react-native";
-import {Ionicons} from "@expo/vector-icons";
+import { Text, View, Modal, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function GameMenuModal({
   visible,

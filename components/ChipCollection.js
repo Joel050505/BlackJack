@@ -1,5 +1,7 @@
-import {View} from "react-native";
+import { View } from "react-native";
 import BettingChip from "./BettingChip";
+import { playPokerChipSound } from "./PlaySound";
+
 export default function ChipCollection({
   coins,
   addBet,
@@ -13,7 +15,10 @@ export default function ChipCollection({
         color="#2E7D32"
         borderColor="#4CAF50"
         dashedColor="#66BB6A"
-        onPress={() => addBet(25)}
+        onPress={() => {
+          addBet(25);
+          playPokerChipSound();
+        }}
         disabled={coins < 25 || currentBet + 25 > coins}
       />
 
@@ -22,7 +27,10 @@ export default function ChipCollection({
         color="#1565C0"
         borderColor="#2196F3"
         dashedColor="#64B5F6"
-        onPress={() => addBet(50)}
+        onPress={() => {
+          addBet(50);
+          playPokerChipSound();
+        }}
         disabled={coins < 50 || currentBet + 50 > coins}
       />
 
@@ -31,7 +39,10 @@ export default function ChipCollection({
         color="#E65100"
         borderColor="#FF9800"
         dashedColor="#FFB74D"
-        onPress={() => addBet(100)}
+        onPress={() => {
+          addBet(100);
+          playPokerChipSound();
+        }}
         disabled={coins < 100 || currentBet + 100 > coins}
       />
 

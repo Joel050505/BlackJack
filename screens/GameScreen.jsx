@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   ImageBackground,
@@ -10,13 +10,13 @@ import {
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import GameMenuModal from "../components/GameMenuModal";
 import ShopMenuModal from "../components/ShopMenuModal";
-import {handleBackConfirmation} from "../utils/handleBackConfirmation";
-import {useCoins} from "../context/CoinsContext";
+import { handleBackConfirmation } from "../utils/handleBackConfirmation";
+import { useCoins } from "../context/CoinsContext";
 import ChipCollection from "../components/ChipCollection";
-import {BettingControls, GameplayControls} from "../components/GameControls";
-import {getRandomCard} from "../utils/deckUtils";
+import { BettingControls, GameplayControls } from "../components/GameControls";
+import { getRandomCard } from "../utils/deckUtils";
 
-export default function GameScreen({navigation}) {
+export default function GameScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [shopModalVisible, setShopModalVisible] = useState(false);
   const [currentBet, setCurrentBet] = useState(0);
@@ -34,7 +34,7 @@ export default function GameScreen({navigation}) {
 
   const [gameResult, setGameResult] = useState("");
 
-  const {coins, addCoins, subtractCoins} = useCoins();
+  const { coins, addCoins, subtractCoins } = useCoins();
 
   // Calculate hand value with proper Ace handling
   const calculateHandValue = (cards) => {
@@ -291,7 +291,7 @@ export default function GameScreen({navigation}) {
               name="coins"
               size={16}
               color="#FFC107"
-              style={{marginLeft: 5}}
+              style={{ marginLeft: 5 }}
             />
             <Text className="text-yellow-400 font-bold text-left text-base">
               {coins}
@@ -321,8 +321,8 @@ export default function GameScreen({navigation}) {
                       ? require("../assets/image/card-back.jpg") // Hide second card
                       : card?.image
                   }
-                  className="w-44 h-56 mx-1"
-                  style={{marginLeft: index > 0 ? -130 : 0}}
+                  className="w-44 h-56 mx-1 transition-all ease-out duration-300"
+                  style={{ marginLeft: index > 0 ? -130 : 0 }}
                   resizeMode="contain"
                 />
               ))}
@@ -376,7 +376,7 @@ export default function GameScreen({navigation}) {
                   key={index}
                   source={card?.image}
                   className="w-44 h-56 mx-1"
-                  style={{marginLeft: index > 0 ? -131 : 0}}
+                  style={{ marginLeft: index > 0 ? -131 : 0 }}
                   resizeMode="contain"
                 />
               ))}

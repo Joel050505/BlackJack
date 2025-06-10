@@ -1,5 +1,6 @@
-import {View, TouchableOpacity, Text} from "react-native";
+import { View, TouchableOpacity, Text } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { PlayAllInSound } from "./PlaySound";
 
 export function BettingControls({
   setCurrentBet,
@@ -11,18 +12,23 @@ export function BettingControls({
   return (
     <View className="flex-row justify-between items-center mb-3 gap-3">
       <TouchableOpacity
-        onPress={() => setCurrentBet(coins)}
+        onPress={() => {
+          setCurrentBet(coins);
+          PlayAllInSound();
+        }}
         className="bg-green-600 px-6 py-3 rounded-xl flex-1 items-center"
         style={{
           shadowColor: "#000",
-          shadowOffset: {width: 0, height: 2},
+          shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.25,
           shadowRadius: 4,
           elevation: 5,
         }}
       >
         <View className="flex-row items-center">
-          <Text className="text-white font-bold text-base ml-2">All in</Text>
+          <Text className="text-white text-center font-bold text-base ml-2">
+            All in
+          </Text>
         </View>
       </TouchableOpacity>
 
@@ -34,7 +40,7 @@ export function BettingControls({
         }`}
         style={{
           shadowColor: "#000",
-          shadowOffset: {width: 0, height: 2},
+          shadowOffset: { width: 0, height: 2 },
           shadowOpacity: currentBet > 0 ? 0.25 : 0.1,
           shadowRadius: 4,
           elevation: currentBet > 0 ? 5 : 2,
@@ -62,7 +68,7 @@ export function BettingControls({
         className="bg-purple-600 px-4 py-3 rounded-xl flex-1 items-center"
         style={{
           shadowColor: "#000",
-          shadowOffset: {width: 0, height: 2},
+          shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.25,
           shadowRadius: 4,
           elevation: 5,
@@ -94,7 +100,7 @@ export function GameplayControls({
             }`}
             style={{
               shadowColor: "#000",
-              shadowOffset: {width: 0, height: 2},
+              shadowOffset: { width: 0, height: 2 },
               shadowOpacity: canHit ? 0.25 : 0.1,
               shadowRadius: 4,
               elevation: canHit ? 5 : 2,
@@ -117,7 +123,7 @@ export function GameplayControls({
             }`}
             style={{
               shadowColor: "#000",
-              shadowOffset: {width: 0, height: 2},
+              shadowOffset: { width: 0, height: 2 },
               shadowOpacity: canStand ? 0.25 : 0.1,
               shadowRadius: 4,
               elevation: canStand ? 5 : 2,
