@@ -1,63 +1,278 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import {
   View,
   ImageBackground,
   TouchableOpacity,
   Text,
   Image,
+  Alert,
 } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import GameMenuModal from "../components/GameMenuModal";
 import ShopMenuModal from "../components/ShopMenuModal";
-import { handleBackConfirmation } from "../utils/handleBackConfirmation";
-import { useCoins } from "../context/CoinsContext";
+import {handleBackConfirmation} from "../utils/handleBackConfirmation";
+import {useCoins} from "../context/CoinsContext";
 import ChipCollection from "../components/ChipCollection";
-import { BettingControls, GameplayControls } from "../components/GameControls";
-import { getRandomCard } from "../utils/deckUtils";
+import {BettingControls, GameplayControls} from "../components/GameControls";
+import {getRandomCard} from "../utils/deckUtils";
 
-export default function GameScreen({ navigation }) {
+export default function GameScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [shopModalVisible, setShopModalVisible] = useState(false);
   const [currentBet, setCurrentBet] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentCard, setCurrentCard] = useState(null);
-  const [secondCard, setSecondCard] = useState(null);
-  const [computerCard, setComputerCard] = useState(null);
-  const [computerSecondCard, setComputerSecondCard] = useState(null);
-  const [isPress, setIsPress] = useState(false);
+  const [gamePhase, setGamePhase] = useState("betting"); // betting, playing, dealer, finished
 
-  const { coins } = useCoins();
+  // Player cards
+  const [playerCards, setPlayerCards] = useState([]);
+  const [playerScore, setPlayerScore] = useState(0);
 
-  // Spelfunktioner
+  // Dealer cards
+  const [dealerCards, setDealerCards] = useState([]);
+  const [dealerScore, setDealerScore] = useState(0);
+  const [showDealerCard, setShowDealerCard] = useState(false);
+
+  const [gameResult, setGameResult] = useState("");
+
+  const {coins, addCoins, subtractCoins} = useCoins();
+
+  // Calculate hand value with proper Ace handling
+  const calculateHandValue = (cards) => {
+    let value = 0;
+    let aces = 0;
+
+    cards.forEach((card) => {
+      if (card.value === 1) {
+        // Ace
+        aces++;
+        value += 11;
+      } else if (card.value > 10) {
+        // Face cards
+        value += 10;
+      } else {
+        value += card.value;
+      }
+    });
+
+    // Convert Aces from 11 to 1 if needed
+    while (value > 21 && aces > 0) {
+      value -= 10;
+      aces--;
+    }
+
+    return value;
+  };
+
+  // Check for blackjack (21 with 2 cards)
+  const isBlackjack = (cards, score) => {
+    return cards.length === 2 && score === 21;
+  };
+
+  // Deal initial cards
+  const handleDeal = () => {
+    if (currentBet === 0) {
+      Alert.alert("No Bet", "Please place a bet before dealing!");
+      return;
+    }
+
+    if (coins < currentBet) {
+      Alert.alert(
+        "Insufficient Coins",
+        "You don't have enough coins for this bet!"
+      );
+      return;
+    }
+
+    // Subtract bet from coins
+    subtractCoins(currentBet);
+
+    // Deal 2 cards to player and dealer
+    const playerCard1 = getRandomCard();
+    const playerCard2 = getRandomCard();
+    const dealerCard1 = getRandomCard();
+    const dealerCard2 = getRandomCard();
+
+    const newPlayerCards = [playerCard1, playerCard2];
+    const newDealerCards = [dealerCard1, dealerCard2];
+
+    const newPlayerScore = calculateHandValue(newPlayerCards);
+    const newDealerScore = calculateHandValue(newDealerCards);
+
+    setPlayerCards(newPlayerCards);
+    setDealerCards(newDealerCards);
+    setPlayerScore(newPlayerScore);
+    setDealerScore(newDealerScore);
+    setIsPlaying(true);
+    setGamePhase("playing");
+    setShowDealerCard(false);
+    setGameResult("");
+
+    // Check for immediate blackjack
+    if (isBlackjack(newPlayerCards, newPlayerScore)) {
+      if (isBlackjack(newDealerCards, newDealerScore)) {
+        // Both have blackjack - tie
+        endGame("tie");
+      } else {
+        // Player blackjack wins
+        endGame("playerBlackjack");
+      }
+    } else if (isBlackjack(newDealerCards, newDealerScore)) {
+      // Dealer blackjack wins
+      setShowDealerCard(true);
+      endGame("dealerBlackjack");
+    }
+  };
+
+  // Player hits (takes another card)
+  const handleHit = () => {
+    if (gamePhase !== "playing") return;
+
+    const newCard = getRandomCard();
+    const newPlayerCards = [...playerCards, newCard];
+    const newPlayerScore = calculateHandValue(newPlayerCards);
+
+    setPlayerCards(newPlayerCards);
+    setPlayerScore(newPlayerScore);
+
+    // Check if player busts
+    if (newPlayerScore > 21) {
+      setShowDealerCard(true);
+      endGame("playerBust");
+    } else if (newPlayerScore === 21) {
+      // Auto stand on 21
+      handleStand();
+    }
+  };
+
+  // Player stands (dealer's turn)
+  const handleStand = () => {
+    if (gamePhase !== "playing") return;
+
+    setGamePhase("dealer");
+    setShowDealerCard(true);
+
+    // Dealer plays automatically
+    setTimeout(() => {
+      playDealer();
+    }, 1000);
+  };
+
+  // Dealer plays according to rules (must hit on 16 or less, stand on 17 or more)
+  const playDealer = async () => {
+    let currentDealerCards = [...dealerCards];
+    let currentDealerScore = dealerScore;
+
+    while (currentDealerScore < 17) {
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Add delay for animation
+
+      const newCard = getRandomCard();
+      currentDealerCards = [...currentDealerCards, newCard];
+      currentDealerScore = calculateHandValue(currentDealerCards);
+
+      setDealerCards(currentDealerCards);
+      setDealerScore(currentDealerScore);
+    }
+
+    // Determine winner
+    setTimeout(() => {
+      determineWinner(playerScore, currentDealerScore);
+    }, 1000);
+  };
+
+  // Determine the winner and handle payouts
+  const determineWinner = (playerFinalScore, dealerFinalScore) => {
+    if (dealerFinalScore > 21) {
+      endGame("dealerBust");
+    } else if (playerFinalScore > dealerFinalScore) {
+      endGame("playerWin");
+    } else if (dealerFinalScore > playerFinalScore) {
+      endGame("dealerWin");
+    } else {
+      endGame("tie");
+    }
+  };
+
+  // End game and handle payouts
+  const endGame = (result) => {
+    setGamePhase("finished");
+    setGameResult(result);
+
+    let payout = 0;
+    let message = "";
+
+    switch (result) {
+      case "playerBlackjack":
+        payout = Math.floor(currentBet * 2.5); // Blackjack pays 2.5x (1.5x + original bet)
+        message = `Blackjack! You won ${payout} coins!`;
+        break;
+      case "playerWin":
+      case "dealerBust":
+        payout = currentBet * 2; // Regular win pays 2x (1x + original bet)
+        message = `You won ${payout} coins!`;
+        break;
+      case "tie":
+        payout = currentBet; // Return original bet
+        message = `It's a tie! Your bet of ${currentBet} coins is returned.`;
+        break;
+      case "playerBust":
+      case "dealerWin":
+      case "dealerBlackjack":
+        payout = 0; // Player loses bet (already subtracted)
+        message = `You lost ${currentBet} coins.`;
+        break;
+    }
+
+    if (payout > 0) {
+      addCoins(payout);
+    }
+
+    Alert.alert("Game Over", message, [
+      {
+        text: "New Game",
+        onPress: () => {
+          resetGame();
+        },
+      },
+    ]);
+  };
+
+  // Reset game for new round
+  const resetGame = () => {
+    setPlayerCards([]);
+    setDealerCards([]);
+    setPlayerScore(0);
+    setDealerScore(0);
+    setIsPlaying(false);
+    setGamePhase("betting");
+    setShowDealerCard(false);
+    setGameResult("");
+    setCurrentBet(0);
+  };
+
+  // Betting functions
   const addBet = (amount) => {
-    if (coins >= amount) {
+    if (coins >= amount && gamePhase === "betting") {
       setCurrentBet((prevBet) => prevBet + amount);
     }
   };
 
-  useEffect(() => {
-    setCurrentCard(getRandomCard());
-    setSecondCard(getRandomCard());
-    setComputerCard(getRandomCard());
-    setComputerSecondCard(getRandomCard());
-  }, []);
-
-  // Log the random card for debugging
-  // Example usage of getRandomCard, can be used in game logic
-
-  const resetBet = () => setCurrentBet(0);
-  const handleHit = () => setIsPress(true);
-
-  const handleStand = () => setIsPress(true);
-
-  const handleDeal = () => {
-    setIsPlaying(true);
-    console.log("Deal pressed");
+  const resetBet = () => {
+    if (gamePhase === "betting") {
+      setCurrentBet(0);
+    }
   };
 
-  // function handleCheckWinner () {
-  //   if()
-  // }
+  // Get visible dealer score (hide second card value until revealed)
+  const getVisibleDealerScore = () => {
+    if (!showDealerCard && dealerCards.length > 0) {
+      // Only show first card value
+      const firstCard = dealerCards[0];
+      if (firstCard.value === 1) return 11; // Ace
+      if (firstCard.value > 10) return 10; // Face card
+      return firstCard.value;
+    }
+    return dealerScore;
+  };
 
   return (
     <ImageBackground
@@ -68,7 +283,7 @@ export default function GameScreen({ navigation }) {
       {/* Header */}
       <View className="w-full flex-row justify-between items-start px-5 pt-20">
         <TouchableOpacity
-          className="bg-black/35 rounded-xl p-3"
+          className="bg-black/35 rounded-xl p-2"
           onPress={() => setShopModalVisible(true)}
         >
           <View className="flex-row items-center gap-3">
@@ -76,7 +291,7 @@ export default function GameScreen({ navigation }) {
               name="coins"
               size={16}
               color="#FFC107"
-              style={{ marginLeft: 5 }}
+              style={{marginLeft: 5}}
             />
             <Text className="text-yellow-400 font-bold text-left text-base">
               {coins}
@@ -92,25 +307,33 @@ export default function GameScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* ComputerCard Display */}
+      {/* Dealer Cards Display */}
       {isPlaying && (
-        <View className="flex flex-row items-center justify-center mt-10">
-          <Image
-            source={computerCard?.image}
-            className="w-44 h-52 mx-auto mb-5 top-1/8"
-            resizeMode="contain"
-          />
-          <Image
-            source={require("../assets/image/card-back.jpg")}
-            className="w-44 h-52 mx-auto mb-5 absolute top-2/8 z-10 left-38"
-            resizeMode="contain"
-          />
-          <View>
-            <Text className="text-white  text-2xl mr-10">
-              {" "}
-              {!isPress ? computerCard.value : ""}{" "}
-              {isPress ? computerCard.value + computerSecondCard.value : ""}
-            </Text>
+        <View className="flex flew-row items-center justify-center mt-10">
+          <Text className="text-white text-lg mb-2">Dealer</Text>
+          <View className="flex-row items-center justify-center">
+            <View className="flex-row items-center justify-center">
+              {dealerCards.map((card, index) => (
+                <Image
+                  key={index}
+                  source={
+                    index === 1 && !showDealerCard
+                      ? require("../assets/image/card-back.jpg") // Hide second card
+                      : card?.image
+                  }
+                  className="w-44 h-56 mx-1"
+                  style={{marginLeft: index > 0 ? -130 : 0}}
+                  resizeMode="contain"
+                />
+              ))}
+            </View>
+
+            <View>
+              <Text className="text-white text-xl mt-2 bg-black/50 px-3 py-1 rounded">
+                {getVisibleDealerScore()}
+                {dealerScore > 21 && showDealerCard && " (BUST)"}
+              </Text>
+            </View>
           </View>
         </View>
       )}
@@ -118,39 +341,91 @@ export default function GameScreen({ navigation }) {
       {/* Current Bet Display */}
       <View className="flex-1 items-center justify-center">
         <Text className="text-white text-sm mb-2">Current Bet</Text>
-        <View className="flex-row items-center">
+        <View className="flex-row items-center ">
           <FontAwesome5 name="coins" size={20} color="#FFC107" />
           <Text className="text-yellow-400 text-2xl font-bold ml-2">
             {currentBet}
           </Text>
         </View>
+
+        {gameResult && (
+          <Text className="text-white text-lg mt-4 text-center">
+            {gameResult.includes("player") && gameResult.includes("Win")
+              ? "You Win!"
+              : gameResult.includes("dealer") && gameResult.includes("Win")
+              ? "Dealer Wins!"
+              : gameResult.includes("tie")
+              ? "Tie Game!"
+              : gameResult.includes("Blackjack")
+              ? "Blackjack!"
+              : gameResult.includes("Bust")
+              ? "Bust!"
+              : ""}
+          </Text>
+        )}
       </View>
 
-      {/* User Card Display */}
+      {/* Player Cards Display */}
       {isPlaying && (
-        <View className="flex flex-row items-center justify-center mb-10">
-          <Image
-            source={currentCard?.image}
-            className="w-44 h-52 mx-auto mb-5 top-1/8"
-            resizeMode="contain"
-          />
-          <Image
-            source={secondCard?.image}
-            className="w-44 h-52 mx-auto mb-5 absolute top-2/8 z-10 left-38"
-            resizeMode="contain"
-          />
-          <View>
-            <Text className="text-white  text-2xl mr-10">
-              {" "}
-              {currentCard.value + secondCard.value}{" "}
-            </Text>
+        <View className="flex items-center justify-center mb-10">
+          <Text className="text-white text-lg mb-2">Player</Text>
+          <View className="flex flex-row items-center align-center justify-center">
+            <View className="flex-row items-center justify-center">
+              {playerCards.map((card, index) => (
+                <Image
+                  key={index}
+                  source={card?.image}
+                  className="w-44 h-56 mx-1"
+                  style={{marginLeft: index > 0 ? -131 : 0}}
+                  resizeMode="contain"
+                />
+              ))}
+            </View>
+            <View>
+              <Text className="text-white text-xl mt-2 bg-black/50 px-3 py-1 rounded">
+                {playerScore}
+                {/* {playerScore > 21 && "(BUST)"} */}
+                {isBlackjack(playerCards, playerScore) && " (BLACKJACK)"}
+              </Text>
+            </View>
           </View>
         </View>
       )}
 
       {/* Game Controls */}
       <View className="px-5 pb-10">
-        {!isPlaying && (
+        {gamePhase === "betting" && (
+          <>
+            <ChipCollection
+              coins={coins}
+              addBet={addBet}
+              currentBet={currentBet}
+              setShopModalVisible={setShopModalVisible}
+            />
+
+            <BettingControls
+              setCurrentBet={setCurrentBet}
+              resetBet={resetBet}
+              currentBet={currentBet}
+              coins={coins}
+              onDeal={handleDeal}
+            />
+          </>
+        )}
+
+        {gamePhase === "playing" && (
+          <GameplayControls
+            onHit={handleHit}
+            onStand={handleStand}
+            isPlaying={true}
+            gamePhase={gamePhase}
+            canHit={playerScore < 21}
+            canStand={true}
+          />
+        )}
+      </View>
+      {/* <View className="px-5 pb-10">
+        {gamePhase === "betting" && (
           <ChipCollection
             coins={coins}
             addBet={addBet}
@@ -159,35 +434,32 @@ export default function GameScreen({ navigation }) {
           />
         )}
 
-        {!isPlaying && (
+        {gamePhase === "betting" && (
           <BettingControls
             setCurrentBet={setCurrentBet}
             resetBet={resetBet}
             currentBet={currentBet}
             coins={coins}
+            onDeal={handleDeal}
           />
         )}
 
         <GameplayControls
           onHit={handleHit}
           onStand={handleStand}
-          onDeal={handleDeal}
           isPlaying={isPlaying}
+          gamePhase={gamePhase}
+          canHit={gamePhase === "playing" && playerScore < 21}
+          canStand={gamePhase === "playing"}
         />
-      </View>
+      </View> */}
 
       {/* Modals */}
       <GameMenuModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onBackToMenu={() => handleBackConfirmation(setModalVisible, navigation)}
-        setIsPlaying={setIsPlaying}
-        setCurrentBet={setCurrentBet}
-        setCurrentCard={setCurrentCard}
-        setSecondCard={setSecondCard}
-        setComputerCard={setComputerCard}
-        setComputerSecondCard={setComputerSecondCard}
-        getRandomCard={getRandomCard}
+        resetGame={resetGame}
       />
 
       <ShopMenuModal
@@ -197,3 +469,205 @@ export default function GameScreen({ navigation }) {
     </ImageBackground>
   );
 }
+
+//Förra koden
+
+// import {useEffect, useState} from "react";
+// import {
+//   View,
+//   ImageBackground,
+//   TouchableOpacity,
+//   Text,
+//   Image,
+// } from "react-native";
+// import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+// import GameMenuModal from "../components/GameMenuModal";
+// import ShopMenuModal from "../components/ShopMenuModal";
+// import {handleBackConfirmation} from "../utils/handleBackConfirmation";
+// import {useCoins} from "../context/CoinsContext";
+// import ChipCollection from "../components/ChipCollection";
+// import {BettingControls, GameplayControls} from "../components/GameControls";
+// import {getRandomCard} from "../utils/deckUtils";
+
+// export default function GameScreen({navigation}) {
+//   const [modalVisible, setModalVisible] = useState(false);
+//   const [shopModalVisible, setShopModalVisible] = useState(false);
+//   const [currentBet, setCurrentBet] = useState(0);
+//   const [isPlaying, setIsPlaying] = useState(false);
+//   const [currentCard, setCurrentCard] = useState(null);
+//   const [secondCard, setSecondCard] = useState(null);
+//   const [computerCard, setComputerCard] = useState(null);
+//   const [computerSecondCard, setComputerSecondCard] = useState(null);
+//   const [isPress, setIsPress] = useState(false);
+
+//   const {coins} = useCoins();
+
+//   // Spelfunktioner
+//   const addBet = (amount) => {
+//     if (coins >= amount) {
+//       setCurrentBet((prevBet) => prevBet + amount);
+//     }
+//   };
+
+//   useEffect(() => {
+//     setCurrentCard(getRandomCard());
+//     setSecondCard(getRandomCard());
+//     setComputerCard(getRandomCard());
+//     setComputerSecondCard(getRandomCard());
+//   }, []);
+
+//   // Log the random card for debugging
+//   // Example usage of getRandomCard, can be used in game logic
+
+//   const resetBet = () => setCurrentBet(0);
+//   const handleHit = () => setIsPress(true);
+
+//   const handleStand = () => setIsPress(true);
+
+//   const handleDeal = () => {
+//     setIsPlaying(true);
+//     console.log("Deal pressed");
+//   };
+
+//   // function handleCheckWinner () {
+//   //   if()
+//   // }
+
+//   return (
+//     <ImageBackground
+//       source={require("../assets/image/board.jpg")}
+//       className="flex-1 w-full h-full"
+//       resizeMode="cover"
+//     >
+//       {/* Header */}
+//       <View className="w-full flex-row justify-between items-start px-5 pt-20">
+//         <TouchableOpacity
+//           className="bg-black/35 rounded-xl p-2"
+//           onPress={() => setShopModalVisible(true)}
+//         >
+//           <View className="flex-row items-center gap-3">
+//             <FontAwesome5
+//               name="coins"
+//               size={16}
+//               color="#FFC107"
+//               style={{marginLeft: 5}}
+//             />
+//             <Text className="text-yellow-400 font-bold text-left text-base">
+//               {coins}
+//             </Text>
+//           </View>
+//         </TouchableOpacity>
+
+//         <TouchableOpacity
+//           className="bg-black/35 p-2 rounded-full items-center"
+//           onPress={() => setModalVisible(true)}
+//         >
+//           <FontAwesome5 name="cog" size={24} color="white" />
+//         </TouchableOpacity>
+//       </View>
+
+//       {/* ComputerCard Display */}
+//       {isPlaying && (
+//         <View className="flex flex-row items-center justify-center mt-10">
+//           <Image
+//             source={computerCard?.image}
+//             className="w-44 h-52 mx-auto mb-5 top-1/8"
+//             resizeMode="contain"
+//           />
+//           <Image
+//             source={require("../assets/image/card-back.jpg")}
+//             className="w-44 h-52 mx-auto mb-5 absolute top-2/8 z-10 left-38"
+//             resizeMode="contain"
+//           />
+//           <View>
+//             <Text className="text-white  text-2xl mr-10">
+//               {" "}
+//               {!isPress ? computerCard.value : ""}{" "}
+//               {isPress ? computerCard.value + computerSecondCard.value : ""}
+//             </Text>
+//           </View>
+//         </View>
+//       )}
+
+//       {/* Current Bet Display */}
+//       <View className="flex-1 items-center justify-center">
+//         <Text className="text-white text-sm mb-2">Current Bet</Text>
+//         <View className="flex-row items-center">
+//           <FontAwesome5 name="coins" size={20} color="#FFC107" />
+//           <Text className="text-yellow-400 text-2xl font-bold ml-2">
+//             {currentBet}
+//           </Text>
+//         </View>
+//       </View>
+
+//       {/* User Card Display */}
+//       {isPlaying && (
+//         <View className="flex flex-row items-center justify-center mb-10">
+//           <Image
+//             source={currentCard?.image}
+//             className="w-44 h-52 mx-auto mb-5 top-1/8"
+//             resizeMode="contain"
+//           />
+//           <Image
+//             source={secondCard?.image}
+//             className="w-44 h-52 mx-auto mb-5 absolute top-2/8 z-10 left-38"
+//             resizeMode="contain"
+//           />
+//           <View>
+//             <Text className="text-white  text-2xl mr-10">
+//               {" "}
+//               {currentCard.value + secondCard.value}{" "}
+//             </Text>
+//           </View>
+//         </View>
+//       )}
+
+//       {/* Game Controls */}
+//       <View className="px-5 pb-10">
+//         {!isPlaying && (
+//           <ChipCollection
+//             coins={coins}
+//             addBet={addBet}
+//             currentBet={currentBet}
+//             setShopModalVisible={setShopModalVisible}
+//           />
+//         )}
+
+//         {!isPlaying && (
+//           <BettingControls
+//             setCurrentBet={setCurrentBet}
+//             resetBet={resetBet}
+//             currentBet={currentBet}
+//             coins={coins}
+//           />
+//         )}
+
+//         <GameplayControls
+//           onHit={handleHit}
+//           onStand={handleStand}
+//           onDeal={handleDeal}
+//           isPlaying={isPlaying}
+//         />
+//       </View>
+
+//       {/* Modals */}
+//       <GameMenuModal
+//         visible={modalVisible}
+//         onClose={() => setModalVisible(false)}
+//         onBackToMenu={() => handleBackConfirmation(setModalVisible, navigation)}
+//         setIsPlaying={setIsPlaying}
+//         setCurrentBet={setCurrentBet}
+//         setCurrentCard={setCurrentCard}
+//         setSecondCard={setSecondCard}
+//         setComputerCard={setComputerCard}
+//         setComputerSecondCard={setComputerSecondCard}
+//         getRandomCard={getRandomCard}
+//       />
+
+//       <ShopMenuModal
+//         visible={shopModalVisible}
+//         onClose={() => setShopModalVisible(false)}
+//       />
+//     </ImageBackground>
+//   );
+// }

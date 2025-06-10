@@ -1,9 +1,9 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, {createContext, useState, useContext, useEffect} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CoinsContext = createContext();
 
-export const CoinsProvider = ({ children }) => {
+export const CoinsProvider = ({children}) => {
   const [coins, setCoins] = useState(100); // Start with 2500 coins
   const [loading, setLoading] = useState(true);
 
@@ -45,12 +45,23 @@ export const CoinsProvider = ({ children }) => {
     setCoins((currentCoins) => currentCoins + amount);
   };
 
+  // Function to update coins directly
+  const updateCoins = (newAmount) => {
+    setCoins(newAmount);
+  };
+
+  const subtractCoins = (amount) => {
+    setCoins((prev) => prev - amount);
+  };
+
   return (
     <CoinsContext.Provider
       value={{
         coins,
         addCoins,
+        updateCoins,
         loading,
+        subtractCoins,
       }}
     >
       {children}

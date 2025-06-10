@@ -1,0 +1,509 @@
+import {useEffect, useState, useRef} from "react";
+import {
+  View,
+  ImageBackground,
+  TouchableOpacity,
+  Text,
+  Image,
+  Animated,
+  Easing,
+  Alert,
+} from "react-native";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import GameMenuModal from "../components/GameMenuModal";
+import ShopMenuModal from "../components/ShopMenuModal";
+import {handleBackConfirmation} from "../utils/handleBackConfirmation";
+import {useCoins} from "../context/CoinsContext";
+import ChipCollection from "../components/ChipCollection";
+import {BettingControls, GameplayControls} from "../components/GameControls";
+import {getRandomCard} from "../utils/deckUtils";
+
+export default function GameScreen({navigation}) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [shopModalVisible, setShopModalVisible] = useState(false);
+  const [currentBet, setCurrentBet] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  // Ändra från individuella kort till kortarrayer
+  const [playerCards, setPlayerCards] = useState([]);
+  const [dealerCards, setDealerCards] = useState([]);
+  const [isDealerTurn, setIsDealerTurn] = useState(false);
+  const [gameResult, setGameResult] = useState(null); // 'win', 'lose', 'push', null
+
+  // Animationer för kort (upp till 5 kort per spelare)
+  const playerCardAnims = [
+    useRef(new Animated.Value(-300)).current,
+    useRef(new Animated.Value(-300)).current,
+    useRef(new Animated.Value(-300)).current,
+    useRef(new Animated.Value(-300)).current,
+    useRef(new Animated.Value(-300)).current,
+  ];
+
+  const dealerCardAnims = [
+    useRef(new Animated.Value(-300)).current,
+    useRef(new Animated.Value(-300)).current,
+    useRef(new Animated.Value(-300)).current,
+    useRef(new Animated.Value(-300)).current,
+    useRef(new Animated.Value(-300)).current,
+  ];
+
+  // Result animation
+  const resultAnim = useRef(new Animated.Value(0)).current;
+
+  const {coins, updateCoins} = useCoins();
+
+  // Spelfunktioner
+  const addBet = (amount) => {
+    if (coins >= amount && !isPlaying) {
+      setCurrentBet((prevBet) => prevBet + amount);
+      updateCoins(coins - amount);
+    }
+  };
+
+  const resetBet = () => {
+    updateCoins(coins + currentBet);
+    setCurrentBet(0);
+  };
+
+  // Beräkna kortens värde
+  const calculateHandValue = (cards) => {
+    if (!cards || cards.length === 0) return 0;
+
+    let sum = 0;
+    let aceCount = 0;
+
+    // Räkna genom att lägga till kortvärdena
+    cards.forEach((card) => {
+      if (card && card.value === 1) {
+        aceCount++;
+        sum += 11;
+      } else if (card) {
+        sum += card.value;
+      }
+    });
+
+    // Justera för ess
+    while (sum > 21 && aceCount > 0) {
+      sum -= 10;
+      aceCount--;
+    }
+
+    return sum;
+  };
+
+  // Kontrollera vinnaren
+  const checkWinner = () => {
+    const playerValue = calculateHandValue(playerCards);
+    const dealerValue = calculateHandValue(dealerCards);
+
+    if (playerValue > 21) {
+      return "lose";
+    } else if (dealerValue > 21) {
+      return "win";
+    } else if (playerValue === 21 && playerCards.length === 2) {
+      return "blackjack";
+    } else if (playerValue > dealerValue) {
+      return "win";
+    } else if (playerValue < dealerValue) {
+      return "lose";
+    } else {
+      return "push";
+    }
+  };
+
+  // Hantera spelresultatet
+  const handleGameResult = (result) => {
+    setGameResult(result);
+
+    // Animera resultat
+    Animated.timing(resultAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+
+    // Uppdatera mynt baserat på resultat
+    if (result === "win") {
+      updateCoins(coins + currentBet * 2);
+    } else if (result === "blackjack") {
+      updateCoins(coins + currentBet * 2.25);
+    } else if (result === "push") {
+      updateCoins(coins + currentBet);
+    }
+  };
+
+  const resetGame = () => {
+    setIsPlaying(false);
+    setIsDealerTurn(false);
+    setGameResult(null);
+    setPlayerCards([]);
+    setDealerCards([]);
+    resultAnim.setValue(0);
+    setCurrentBet(0);
+
+    // Återställ animationerna
+    playerCardAnims.forEach((anim) => anim.setValue(-300));
+    dealerCardAnims.forEach((anim) => anim.setValue(-300));
+  };
+
+  const handleHit = () => {
+    if (!isPlaying || gameResult || isDealerTurn) return;
+
+    // Kontrollera att vi inte redan har för många kort
+    if (playerCards.length >= 5) {
+      Alert.alert("Maximum Cards", "You already have 5 cards.");
+      return;
+    }
+
+    const newCard = getRandomCard();
+    const newCardIndex = playerCards.length;
+
+    // Lägg till det nya kortet i spelarens hand
+    setPlayerCards((prevCards) => [...prevCards, newCard]);
+
+    // Animera det nya kortet
+    playerCardAnims[newCardIndex].setValue(-300);
+    Animated.timing(playerCardAnims[newCardIndex], {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+      easing: Easing.out(Easing.ease),
+    }).start(() => {
+      // Kontrollera om spelaren har bust efter det nya kortet
+      const updatedPlayerCards = [...playerCards, newCard];
+      const playerValue = calculateHandValue(updatedPlayerCards);
+
+      if (playerValue > 21) {
+        setIsDealerTurn(true);
+        handleGameResult("lose");
+      }
+    });
+  };
+
+  const dealerDrawCard = () => {
+    // Kontrollera att dealern inte redan har för många kort
+    if (dealerCards.length >= 5) return;
+
+    const newCard = getRandomCard();
+    const newCardIndex = dealerCards.length;
+
+    // Animera det nya kortet
+    dealerCardAnims[newCardIndex].setValue(-300);
+
+    // Uppdatera dealerns hand
+    setDealerCards((prevCards) => [...prevCards, newCard]);
+
+    // Animera det nya kortet
+    return new Promise((resolve) => {
+      Animated.timing(dealerCardAnims[newCardIndex], {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.ease),
+      }).start(() => {
+        resolve();
+      });
+    });
+  };
+
+  const playDealerTurn = async () => {
+    setIsDealerTurn(true);
+
+    // Dealern fortsätter dra kort tills den har minst 17
+    let currentValue = calculateHandValue(dealerCards);
+
+    while (currentValue < 17 && dealerCards.length < 5) {
+      await dealerDrawCard();
+      currentValue = calculateHandValue(dealerCards);
+    }
+
+    // När dealern är klar, kontrollera vinnaren
+    const result = checkWinner();
+    handleGameResult(result);
+  };
+
+  const handleStand = () => {
+    if (!isPlaying || gameResult) return;
+    playDealerTurn();
+  };
+
+  const handleDeal = () => {
+    if (currentBet <= 0) {
+      Alert.alert("Bet Required", "Please place a bet before dealing.");
+      return;
+    }
+
+    // Reset animations
+    playerCardAnims.forEach((anim) => anim.setValue(-300));
+    dealerCardAnims.forEach((anim) => anim.setValue(-300));
+
+    setIsPlaying(true);
+    setIsDealerTurn(false);
+    setGameResult(null);
+    resultAnim.setValue(0);
+
+    // Generera två startkort för både spelare och dealer
+    const pCard1 = getRandomCard();
+    const pCard2 = getRandomCard();
+    const dCard1 = getRandomCard();
+    const dCard2 = getRandomCard();
+
+    setPlayerCards([pCard1, pCard2]);
+    setDealerCards([dCard1, dCard2]);
+
+    // Animate the cards one by one
+    Animated.sequence([
+      // First card to player
+      Animated.timing(playerCardAnims[0], {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.ease),
+      }),
+
+      // First card to dealer
+      Animated.timing(dealerCardAnims[0], {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.ease),
+      }),
+
+      // Second card to player
+      Animated.timing(playerCardAnims[1], {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.ease),
+      }),
+
+      // Second card to dealer
+      Animated.timing(dealerCardAnims[1], {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.ease),
+      }),
+    ]).start(() => {
+      // Kontrollera för blackjack direkt
+      const playerValue = calculateHandValue([pCard1, pCard2]);
+      if (playerValue === 21) {
+        setIsDealerTurn(true);
+        handleGameResult("blackjack");
+      }
+    });
+  };
+
+  // Visa resultatet
+  const renderResult = () => {
+    if (!gameResult) return null;
+
+    let message = "";
+    let color = "white";
+
+    switch (gameResult) {
+      case "win":
+        message = "You Win!";
+        color = "#4CAF50";
+        break;
+      case "blackjack":
+        message = "Blackjack!";
+        color = "#FFC107";
+        break;
+      case "lose":
+        message = "Dealer Wins";
+        color = "#F44336";
+        break;
+      case "push":
+        message = "Push - It's a draw!";
+        color = "white";
+        break;
+    }
+
+    return (
+      <Animated.View
+        className="items-center justify-center my-2"
+        style={{opacity: resultAnim}}
+      >
+        <Text style={{color: color, fontSize: 24, fontWeight: "bold"}}>
+          {message}
+        </Text>
+        <TouchableOpacity
+          className="bg-blue-500 rounded-lg px-4 py-2 mt-2"
+          onPress={resetGame}
+        >
+          <Text className="text-white font-bold">New Game</Text>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
+
+  return (
+    <ImageBackground
+      source={require("../assets/image/board.jpg")}
+      className="flex-1 w-full h-full"
+      resizeMode="cover"
+    >
+      {/* Header */}
+      <View className="w-full flex-row justify-between items-start px-5 pt-20">
+        <TouchableOpacity
+          className="bg-black/35 rounded-xl p-2"
+          onPress={() => setShopModalVisible(true)}
+        >
+          <View className="flex-row items-center gap-3">
+            <FontAwesome5
+              name="coins"
+              size={16}
+              color="#FFC107"
+              style={{marginLeft: 5}}
+            />
+            <Text className="text-yellow-400 font-bold text-left text-base">
+              {coins}
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="bg-black/35 p-2 rounded-full items-center"
+          onPress={() => setModalVisible(true)}
+        >
+          <FontAwesome5 name="cog" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      {/* ComputerCard Display */}
+      <View className="flex flex-row items-center justify-center mt-10">
+        <Text className="text-white text-lg absolute top-0">Dealer</Text>
+        {isPlaying &&
+          dealerCards.map((card, index) => {
+            // Beräkna positioner baserat på index
+            const offset = index * 40; // Överlappning mellan kort
+
+            return (
+              <Animated.View
+                key={`dealer-card-${index}`}
+                style={{
+                  position: "absolute",
+                  zIndex: index,
+                  transform: [{translateX: dealerCardAnims[index]}],
+                  left: index === 0 ? "30%" : `calc(30% + ${offset}px)`,
+                  top: index === 0 ? 0 : 0,
+                }}
+              >
+                <Image
+                  source={
+                    index === 1 && !isDealerTurn
+                      ? require("../assets/image/card-back.jpg")
+                      : card?.image
+                  }
+                  className="w-44 h-52 mx-auto mb-5"
+                  resizeMode="contain"
+                />
+              </Animated.View>
+            );
+          })}
+        <View style={{position: "absolute", right: 40, bottom: 0}}>
+          <Text className="text-white text-2xl">
+            {isPlaying
+              ? isDealerTurn
+                ? calculateHandValue(dealerCards)
+                : dealerCards[0]?.value || 0
+              : ""}
+          </Text>
+        </View>
+      </View>
+
+      {/* Game Result */}
+      {renderResult()}
+
+      {/* Current Bet Display */}
+      <View className="items-center justify-center py-3 my-4">
+        <Text className="text-white text-sm mb-2">Current Bet</Text>
+        <View className="flex-row items-center">
+          <FontAwesome5 name="coins" size={20} color="#FFC107" />
+          <Text className="text-yellow-400 text-2xl font-bold ml-2">
+            {currentBet}
+          </Text>
+        </View>
+      </View>
+
+      {/* User Card Display */}
+      <View className="flex flex-row items-center justify-center mb-10">
+        <Text className="text-white text-lg absolute top-0">Your Hand</Text>
+        {isPlaying &&
+          playerCards.map((card, index) => {
+            // Beräkna positioner baserat på index
+            const offset = index * 40; // Överlappning mellan kort
+
+            return (
+              <Animated.View
+                key={`player-card-${index}`}
+                style={{
+                  position: "absolute",
+                  zIndex: index,
+                  transform: [{translateX: playerCardAnims[index]}],
+                  left: index === 0 ? "30%" : `calc(30% + ${offset}px)`,
+                  top: index === 0 ? 0 : 0,
+                }}
+              >
+                <Image
+                  source={card?.image}
+                  className="w-44 h-52 mx-auto mb-5"
+                  resizeMode="contain"
+                />
+              </Animated.View>
+            );
+          })}
+        <View style={{position: "absolute", right: 40, bottom: 0}}>
+          <Text className="text-white text-2xl">
+            {isPlaying ? calculateHandValue(playerCards) : ""}
+          </Text>
+        </View>
+      </View>
+
+      {/* Game Controls */}
+      <View className="px-5 pb-10">
+        {!isPlaying && (
+          <ChipCollection
+            coins={coins}
+            addBet={addBet}
+            currentBet={currentBet}
+            setShopModalVisible={setShopModalVisible}
+          />
+        )}
+
+        {!isPlaying && (
+          <BettingControls
+            setCurrentBet={setCurrentBet}
+            resetBet={resetBet}
+            currentBet={currentBet}
+            coins={coins}
+          />
+        )}
+
+        <GameplayControls
+          onHit={handleHit}
+          onStand={handleStand}
+          onDeal={handleDeal}
+          isPlaying={isPlaying}
+          gameOver={gameResult !== null}
+        />
+      </View>
+
+      {/* Modals */}
+      <GameMenuModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onBackToMenu={() => handleBackConfirmation(setModalVisible, navigation)}
+        setIsPlaying={setIsPlaying}
+        setCurrentBet={setCurrentBet}
+        resetGame={resetGame}
+      />
+
+      <ShopMenuModal
+        visible={shopModalVisible}
+        onClose={() => setShopModalVisible(false)}
+      />
+    </ImageBackground>
+  );
+}

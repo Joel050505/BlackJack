@@ -3,14 +3,16 @@ Todolist - för vad vi ska göra i projeketet.
 
 Todos
 
-1. Funktionalitet för spelets logic (viktigast)
-2. 
-3. Ta bort mynt efter bet and tryggt deal
-4. Få tillbaka mynt om vunnit, annars ta bort ifall man förlorar (blackjack = 2.25 insatsen) (samma tal = +- 0)
+1. Funktionalitet för spelets logik skall städas/flyttas och gå igenom,
+   - Försöka få till en bättre struktur på koden, kanske dela upp i olika filer.
+2. Animera korten när de delas ut, så att de inte bara dyker upp.
+   
+3. ✅  Ta bort mynt efter bet and tryggt deal (Klart)
+4. ✅ Få tillbaka mynt om vunnit, annars ta bort ifall man förlorar (blackjack = 2.25 insatsen) (samma tal = +- 0) (Klart)
 5.
-6. När man vinner kommer en modal upp som visar hur mycket man vunnit och gratulation
-7.
-8.Fungerande Hit or Stand knappar.
+6. När man vinner kommer en modal upp som visar hur mycket man vunnit och gratulation istället för en ful Alert
+7. Byta back-card bilden, den har fula svarta hörn.
+8. ✅ Fungerande Hit or Stand knappar.
 9. Lägg till ljud effekt när man klickar på ett chip
 10. Eventuellt byta bakgrunds bild till första sidan bilden tar över för mycket och man tappar fokus från själva spelets namn,
 samt byta färgen då det är för olika färger. (Kanske byta font till "Bebas Neue")
