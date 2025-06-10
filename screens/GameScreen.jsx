@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import {
   View,
   ImageBackground,
@@ -10,13 +10,13 @@ import {
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import GameMenuModal from "../components/GameMenuModal";
 import ShopMenuModal from "../components/ShopMenuModal";
-import { handleBackConfirmation } from "../utils/handleBackConfirmation";
-import { useCoins } from "../context/CoinsContext";
+import {handleBackConfirmation} from "../utils/handleBackConfirmation";
+import {useCoins} from "../context/CoinsContext";
 import ChipCollection from "../components/ChipCollection";
-import { BettingControls, GameplayControls } from "../components/GameControls";
-import { getRandomCard } from "../utils/deckUtils";
+import {BettingControls, GameplayControls} from "../components/GameControls";
+import {getRandomCard} from "../utils/deckUtils";
 
-export default function GameScreen({ navigation }) {
+export default function GameScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [shopModalVisible, setShopModalVisible] = useState(false);
   const [currentBet, setCurrentBet] = useState(0);
@@ -34,7 +34,7 @@ export default function GameScreen({ navigation }) {
 
   const [gameResult, setGameResult] = useState("");
 
-  const { coins, addCoins, subtractCoins } = useCoins();
+  const {coins, addCoins, subtractCoins} = useCoins();
 
   // Calculate hand value with proper Ace handling
   const calculateHandValue = (cards) => {
@@ -109,6 +109,9 @@ export default function GameScreen({ navigation }) {
 
     // Check for immediate blackjack
     if (isBlackjack(newPlayerCards, newPlayerScore)) {
+      // Visa alltid dealerns kort vid BlackJack
+      setShowDealerCard(true);
+
       if (isBlackjack(newDealerCards, newDealerScore)) {
         // Both have blackjack - tie
         endGame("tie");
@@ -122,7 +125,6 @@ export default function GameScreen({ navigation }) {
       endGame("dealerBlackjack");
     }
   };
-
   // Player hits (takes another card)
   const handleHit = () => {
     if (gamePhase !== "playing") return;
@@ -291,7 +293,7 @@ export default function GameScreen({ navigation }) {
               name="coins"
               size={16}
               color="#FFC107"
-              style={{ marginLeft: 5 }}
+              style={{marginLeft: 5}}
             />
             <Text className="text-yellow-400 font-bold text-left text-base">
               {coins}
@@ -322,7 +324,7 @@ export default function GameScreen({ navigation }) {
                       : card?.image
                   }
                   className="w-44 h-56 mx-1 transition-all ease-out duration-300"
-                  style={{ marginLeft: index > 0 ? -130 : 0 }}
+                  style={{marginLeft: index > 0 ? -130 : 0}}
                   resizeMode="contain"
                 />
               ))}
@@ -331,7 +333,7 @@ export default function GameScreen({ navigation }) {
             <View>
               <Text className="text-white text-xl mt-2 bg-black/50 px-3 py-1 rounded">
                 {getVisibleDealerScore()}
-                {dealerScore > 21 && showDealerCard && " (BUST)"}
+                {/* {dealerScore > 21 && showDealerCard && " (BUST)"} */}
               </Text>
             </View>
           </View>
@@ -350,14 +352,14 @@ export default function GameScreen({ navigation }) {
 
         {gameResult && (
           <Text className="text-white text-lg mt-4 text-center">
-            {gameResult.includes("player") && gameResult.includes("Win")
+            {gameResult === "playerBlackjack"
+              ? "Blackjack!"
+              : gameResult.includes("player") && gameResult.includes("Win")
               ? "You Win!"
               : gameResult.includes("dealer") && gameResult.includes("Win")
               ? "Dealer Wins!"
               : gameResult.includes("tie")
               ? "Tie Game!"
-              : gameResult.includes("Blackjack")
-              ? "Blackjack!"
               : gameResult.includes("Bust")
               ? "Bust!"
               : ""}
@@ -376,7 +378,7 @@ export default function GameScreen({ navigation }) {
                   key={index}
                   source={card?.image}
                   className="w-44 h-56 mx-1"
-                  style={{ marginLeft: index > 0 ? -131 : 0 }}
+                  style={{marginLeft: index > 0 ? -131 : 0}}
                   resizeMode="contain"
                 />
               ))}
@@ -384,8 +386,7 @@ export default function GameScreen({ navigation }) {
             <View>
               <Text className="text-white text-xl mt-2 bg-black/50 px-3 py-1 rounded">
                 {playerScore}
-                {/* {playerScore > 21 && "(BUST)"} */}
-                {isBlackjack(playerCards, playerScore) && " (BLACKJACK)"}
+                {isBlackjack(playerCards, playerScore)}
               </Text>
             </View>
           </View>
@@ -424,35 +425,6 @@ export default function GameScreen({ navigation }) {
           />
         )}
       </View>
-      {/* <View className="px-5 pb-10">
-        {gamePhase === "betting" && (
-          <ChipCollection
-            coins={coins}
-            addBet={addBet}
-            currentBet={currentBet}
-            setShopModalVisible={setShopModalVisible}
-          />
-        )}
-
-        {gamePhase === "betting" && (
-          <BettingControls
-            setCurrentBet={setCurrentBet}
-            resetBet={resetBet}
-            currentBet={currentBet}
-            coins={coins}
-            onDeal={handleDeal}
-          />
-        )}
-
-        <GameplayControls
-          onHit={handleHit}
-          onStand={handleStand}
-          isPlaying={isPlaying}
-          gamePhase={gamePhase}
-          canHit={gamePhase === "playing" && playerScore < 21}
-          canStand={gamePhase === "playing"}
-        />
-      </View> */}
 
       {/* Modals */}
       <GameMenuModal

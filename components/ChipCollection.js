@@ -1,6 +1,6 @@
-import { View } from "react-native";
+import {View} from "react-native";
 import BettingChip from "./BettingChip";
-import { playPokerChipSound } from "./PlaySound";
+import {playPokerChipSound} from "../utils/PlaySound";
 
 export default function ChipCollection({
   coins,

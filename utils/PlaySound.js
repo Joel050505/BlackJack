@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { Audio } from "expo-av";
+import React, {useState} from "react";
+import {Audio} from "expo-av";
 
 // Function that can be imported and used anywhere
 export const playSound = async (soundFile) => {
   try {
-    const { sound } = await Audio.Sound.createAsync(soundFile);
+    const {sound} = await Audio.Sound.createAsync(soundFile);
     await sound.playAsync();
 
     // Unload when finished to free memory
