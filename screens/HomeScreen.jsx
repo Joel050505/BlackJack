@@ -1,33 +1,35 @@
-import {
-  Text,
-  View,
-  ImageBackground,
-  Animated,
-  TouchableOpacity,
-} from "react-native";
+import {Text, View, ImageBackground, TouchableOpacity} from "react-native";
 import {useEffect, useRef} from "react";
 import {StatusBar} from "expo-status-bar";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
 
 export default function HomeScreen({navigation}) {
-  // Animation value for bouncing text
-  const bounceAnim = useRef(new Animated.Value(0)).current;
+  // Använd useSharedValue istället för Animated.Value
+  const bounceAnim = useSharedValue(0);
 
-  // Setting up the bounce animation
+  // Skapa en animerad stil
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{translateY: bounceAnim.value}],
+    };
+  });
+
+  // Konfigurera animationen med Reanimated
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(bounceAnim, {
-          toValue: -15,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(bounceAnim, {
-          toValue: 0,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    bounceAnim.value = withRepeat(
+      withSequence(
+        withTiming(-15, {duration: 1000, easing: Easing.inOut(Easing.ease)}),
+        withTiming(0, {duration: 800, easing: Easing.inOut(Easing.ease)})
+      ),
+      -1 // -1 betyder oändlig upprepning
+    );
   }, []);
 
   return (
@@ -38,9 +40,7 @@ export default function HomeScreen({navigation}) {
     >
       <Animated.View
         className="flex-1 items-center justify-center"
-        style={{
-          transform: [{translateY: bounceAnim}],
-        }}
+        style={animatedStyle}
       >
         <View className="items-center">
           <Text className="text-green-600 text-4xl font-bold text-center mb-1 tracking-wider">

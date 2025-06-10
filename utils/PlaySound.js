@@ -1,4 +1,3 @@
-import React, {useState} from "react";
 import {Audio} from "expo-av";
 
 // Function that can be imported and used anywhere
