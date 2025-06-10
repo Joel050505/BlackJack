@@ -1,60 +1,35 @@
-// import * as React from "react";
-// import "./global.css"; // Import global styles
-// import {NavigationContainer} from "@react-navigation/native";
-// import {createStackNavigator} from "@react-navigation/stack";
-// import HomeScreen from "./screens/HomeScreen";
-// import GameScreen from "./screens/GameScreen";
-// import {CoinsProvider} from "./context/CoinsContext"; // Import CoinsContext
-
-// const Stack = createStackNavigator();
-
-// function App() {
-//   return (
-//     <CoinsProvider>
-//       {/* Wrap the app with CoinsProvider to provide coin context */}
-//       <NavigationContainer>
-//         <Stack.Navigator
-//           initialRouteName="Home"
-//           screenOptions={{headerShown: false}}
-//         >
-//           <Stack.Screen name="Home" component={HomeScreen} />
-//           <Stack.Screen name="Game" component={GameScreen} />
-//         </Stack.Navigator>
-//       </NavigationContainer>
-//     </CoinsProvider>
-//   );
-// }
-import * as React from "react";
-import {useState, useEffect} from "react";
-import "./global.css"; // Import global styles
-import {View, ActivityIndicator, Animated} from "react-native";
+import "./global.css";
+import {useState} from "react";
+import {View, ActivityIndicator, Animated, LogBox} from "react-native";
 import HomeScreen from "./screens/HomeScreen";
 import GameScreen from "./screens/GameScreen";
-import {CoinsProvider} from "./context/CoinsContext"; // Import CoinsContext
+import {CoinsProvider} from "./context/CoinsContext";
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState("Home");
   const [isLoading, setIsLoading] = useState(false);
-  const fadeAnim = useState(new Animated.Value(1))[0];
+  const fadeAnim = useState(new Animated.Value(1))[0]; // Animeringsvärde för fade-in/fade-out
 
-  // Hantera skärmbyten med en loading state
-  const navigate = (screenName) => {
+  // Navigeringsfunktioner
+  function navigate(screenName) {
+    // Undvik onödig navigering
     if (currentScreen === screenName) return;
 
+    // Visa laddningsindikator
     setIsLoading(true);
 
-    // Animera ut nuvarande skärm
+    // Fade ut aktuell skärm
     Animated.timing(fadeAnim, {
       toValue: 0,
       duration: 150,
       useNativeDriver: true,
     }).start(() => {
-      // Byt skärm när utfadningen är klar
+      // Byt skärm
       setCurrentScreen(screenName);
 
-      // 2 sekunders timeout för laddningsindikatorn
+      // Kort väntetid för laddningsanimation
       setTimeout(() => {
-        // Animera in den nya skärmen
+        // Fade in ny skärm
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 150,
@@ -62,10 +37,11 @@ function App() {
         }).start(() => {
           setIsLoading(false);
         });
-      }, 800); // laddningstid
+      }, 800);
     });
-  };
-  // Navigation props to pass to screens
+  }
+
+  // Navigation-objekt som skickas till skärmarna
   const navigation = {
     navigate: navigate,
     goBack: () => navigate("Home"),
@@ -73,24 +49,16 @@ function App() {
 
   return (
     <CoinsProvider>
-      <View style={{flex: 1, backgroundColor: "#000"}}>
+      <View className="flex-1 bg-black">
+        {/* Laddningsindikator */}
         {isLoading && (
-          <View
-            style={{
-              position: "absolute",
-              width: "100%",
-              height: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "black",
-              zIndex: 10,
-            }}
-          >
+          <View className="absolute w-full h-full justify-center items-center bg-black z-10">
             <ActivityIndicator size="large" color="#FFC107" />
           </View>
         )}
 
-        <Animated.View style={{flex: 1, opacity: fadeAnim}}>
+        {/* Skärmcontainer med opacity-animation */}
+        <Animated.View className="flex-1" style={{opacity: fadeAnim}}>
           {currentScreen === "Home" && <HomeScreen navigation={navigation} />}
           {currentScreen === "Game" && <GameScreen navigation={navigation} />}
         </Animated.View>

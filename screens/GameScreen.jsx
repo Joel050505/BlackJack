@@ -14,7 +14,7 @@ import {handleBackConfirmation} from "../utils/handleBackConfirmation";
 import {useCoins} from "../context/CoinsContext";
 import ChipCollection from "../components/ChipCollection";
 import {BettingControls, GameplayControls} from "../components/GameControls";
-import {getRandomCard} from "../utils/deckUtils";
+import {getRandomCard} from "../utils/gamelogic/getRandomCard";
 
 export default function GameScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);

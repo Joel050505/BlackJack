@@ -1,4 +1,4 @@
-import {cards} from "../data/cards";
+import {cards} from "../../data/cards";
 
 // Funktion för att hämta ett slumpmässigt kort
 export const getRandomCard = () => {
