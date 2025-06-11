@@ -24,5 +24,3 @@ export function calculateHandValue(cards) {
 export function isBlackjack(cards, score) {
   return cards.length === 2 && score === 21;
 }
-
-// export const shouldDealerHit = (score) => score < 17;
