@@ -259,11 +259,13 @@ export default function GameScreen({navigation}) {
                   key={index}
                   source={
                     index === 1 && !showDealerCard
-                      ? require("../assets/image/card-back.jpg") // Hide second card
+                      ? require("../assets/image/card-back2.png") // Hide second card
                       : card?.image
                   }
-                  className="w-44 h-56 mx-1 transition-all ease-out duration-300"
-                  style={{marginLeft: index > 0 ? -130 : 0}}
+                  className="w-44 h-56 mx-1"
+                  style={{
+                    marginLeft: index > 0 ? -130 : 0,
+                  }}
                   resizeMode="contain"
                 />
               ))}
