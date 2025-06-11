@@ -1,5 +1,3 @@
-import { Alert } from "react-native";
-
 // Dealer plays according to rules (must hit on 16 or less, stand on 17 or more)
 export const playDealer = async ({
   dealerCards,
@@ -14,8 +12,9 @@ export const playDealer = async ({
   setGameResult,
   addCoins,
   resetGame,
-  setShowWinningModal, // Lägg till dessa två parametrar
+  setShowWinningModal,
   setShowLosingModal,
+  setShowTieModal,
 }) => {
   let currentDealerCards = [...dealerCards];
   let currentDealerScore = dealerScore;
@@ -40,7 +39,8 @@ export const playDealer = async ({
       addCoins,
       resetGame,
       setShowLosingModal,
-      setShowWinningModal, // Pass these two parameters
+      setShowWinningModal,
+      setShowTieModal,
     });
   }, 1000);
 };
@@ -53,8 +53,9 @@ export const endGame = ({
   setGameResult,
   addCoins,
   resetGame,
-  setShowWinningModal, // Lägg till dessa två parametrar
+  setShowWinningModal,
   setShowLosingModal,
+  setShowTieModal,
 }) => {
   setGamePhase("finished");
   setGameResult(result);
@@ -73,6 +74,8 @@ export const endGame = ({
       break;
     case "tie":
       payout = currentBet; // Return original bet
+      setShowTieModal(true);
+
       // Visa ingen modal vid oavgjort
       break;
     case "playerBust":
@@ -89,6 +92,35 @@ export const endGame = ({
 
   // Ta bort Alert-anropet
 };
+
+// Determine the winner and handle payouts
+export const determineWinner = (
+  playerFinalScore,
+  dealerFinalScore,
+  endGameParams
+) => {
+  // const {setShowLosingModal, setShowWinningModal} = endGameParams;
+  let result;
+
+  if (dealerFinalScore > 21) {
+    result = "dealerBust";
+    // setShowWinningModal(true);
+  } else if (playerFinalScore > dealerFinalScore) {
+    result = "playerWin";
+    // setShowWinningModal(true);
+  } else if (dealerFinalScore > playerFinalScore) {
+    result = "dealerWin";
+    // setShowLosingModal(true);
+  } else {
+    result = "tie";
+  }
+
+  endGame({
+    result,
+    ...endGameParams,
+  });
+};
+
 // export const endGame = ({
 //   result,
 //   currentBet,
@@ -138,31 +170,3 @@ export const endGame = ({
 //     },
 //   ]);
 // };
-
-// Determine the winner and handle payouts
-export const determineWinner = (
-  playerFinalScore,
-  dealerFinalScore,
-  endGameParams
-) => {
-  const { setShowLosingModal, setShowWinningModal } = endGameParams;
-  let result;
-
-  if (dealerFinalScore > 21) {
-    result = "dealerBust";
-    setShowWinningModal(true);
-  } else if (playerFinalScore > dealerFinalScore) {
-    result = "playerWin";
-    setShowWinningModal(true);
-  } else if (dealerFinalScore > playerFinalScore) {
-    result = "dealerWin";
-    setShowLosingModal(true);
-  } else {
-    result = "tie";
-  }
-
-  endGame({
-    result,
-    ...endGameParams,
-  });
-};

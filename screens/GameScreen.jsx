@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import {
   View,
   ImageBackground,
@@ -10,11 +10,11 @@ import {
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import GameMenuModal from "../components/GameMenuModal";
 import ShopMenuModal from "../components/ShopMenuModal";
-import { handleBackConfirmation } from "../utils/handleBackConfirmation";
-import { useCoins } from "../context/CoinsContext";
+import {handleBackConfirmation} from "../utils/handleBackConfirmation";
+import {useCoins} from "../context/CoinsContext";
 import ChipCollection from "../components/ChipCollection";
-import { BettingControls, GameplayControls } from "../components/GameControls";
-import { getRandomCard } from "../utils/gamelogic/getRandomCard";
+import {BettingControls, GameplayControls} from "../components/GameControls";
+import {getRandomCard} from "../utils/gamelogic/getRandomCard";
 import GameResultModal from "../components/GameResultModal";
 import {
   isBlackjack,
@@ -27,7 +27,7 @@ import {
   endGame,
 } from "../utils/gamelogic/gameRules";
 
-export default function GameScreen({ navigation }) {
+export default function GameScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [shopModalVisible, setShopModalVisible] = useState(false);
   const [currentBet, setCurrentBet] = useState(0);
@@ -46,10 +46,11 @@ export default function GameScreen({ navigation }) {
   // Modals for winning and losing
   const [showWinningModal, setShowWinningModal] = useState(false);
   const [showLosingModal, setShowLosingModal] = useState(false);
+  const [showTieModal, setShowTieModal] = useState(false);
 
   const [gameResult, setGameResult] = useState("");
 
-  const { coins, addCoins, subtractCoins } = useCoins();
+  const {coins, addCoins, subtractCoins} = useCoins();
 
   // Deal initial cards
   const handleDeal = () => {
@@ -103,6 +104,7 @@ export default function GameScreen({ navigation }) {
           resetGame,
           setShowWinningModal, // Lägg till dessa
           setShowLosingModal,
+          setShowTieModal,
         });
       } else {
         // Player blackjack wins
@@ -113,8 +115,9 @@ export default function GameScreen({ navigation }) {
           setGameResult,
           addCoins,
           resetGame,
-          setShowWinningModal, // Lägg till dessa
+          setShowWinningModal,
           setShowLosingModal,
+          setShowTieModal,
         });
       }
     } else if (isBlackjack(newDealerCards, newDealerScore)) {
@@ -127,14 +130,15 @@ export default function GameScreen({ navigation }) {
         setGameResult,
         addCoins,
         resetGame,
-        setShowWinningModal, // Lägg till dessa
+        setShowWinningModal,
         setShowLosingModal,
+        setShowTieModal,
       });
     }
   };
 
   // Player hits (takes another card)
-  const handleHit = () => {
+  function handleHit() {
     if (gamePhase !== "playing") return;
 
     const newCard = getRandomCard();
@@ -156,12 +160,13 @@ export default function GameScreen({ navigation }) {
         resetGame,
         setShowWinningModal, // Lägg till dessa
         setShowLosingModal,
+        setShowTieModal,
       });
     } else if (newPlayerScore === 21) {
       // Auto stand on 21
       handleStand();
     }
-  };
+  }
 
   // Player stands (dealer's turn)
   const handleStand = () => {
@@ -189,6 +194,7 @@ export default function GameScreen({ navigation }) {
         resetGame,
         setShowWinningModal,
         setShowLosingModal,
+        setShowTieModal,
       });
     }, 1000);
   };
@@ -248,7 +254,7 @@ export default function GameScreen({ navigation }) {
               name="coins"
               size={16}
               color="#FFC107"
-              style={{ marginLeft: 5 }}
+              style={{marginLeft: 5}}
             />
             <Text className="text-yellow-400 font-bold text-left text-base">
               {coins}
@@ -332,7 +338,7 @@ export default function GameScreen({ navigation }) {
                   key={index}
                   source={card?.image}
                   className="w-44 h-56 mx-1"
-                  style={{ marginLeft: index > 0 ? -131 : 0 }}
+                  style={{marginLeft: index > 0 ? -131 : 0}}
                   resizeMode="contain"
                 />
               ))}
@@ -379,6 +385,8 @@ export default function GameScreen({ navigation }) {
         )}
       </View>
       {/* Modals */}
+
+      {/*Winning Modal*/}
       {showWinningModal && (
         <GameResultModal
           visible={showWinningModal}
@@ -386,6 +394,28 @@ export default function GameScreen({ navigation }) {
           gameResult={gameResult}
           currentBet={currentBet}
           addCoins={addCoins}
+          resetGame={resetGame}
+        />
+      )}
+
+      {/*Losing Modal*/}
+      {showLosingModal && (
+        <GameResultModal
+          visible={showLosingModal}
+          onClose={() => setShowLosingModal(false)}
+          gameResult={gameResult}
+          currentBet={currentBet}
+          resetGame={resetGame}
+        />
+      )}
+
+      {/* Tie Modal */}
+      {showTieModal && (
+        <GameResultModal
+          visible={showTieModal}
+          onClose={() => setShowTieModal(false)}
+          gameResult={gameResult}
+          currentBet={currentBet}
           resetGame={resetGame}
         />
       )}

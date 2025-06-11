@@ -1,5 +1,5 @@
-import React from "react";
 import {View, Text, Modal, TouchableOpacity} from "react-native";
+import {useEffect} from "react";
 
 export default function GameResultModal({
   visible,
@@ -8,11 +8,16 @@ export default function GameResultModal({
   currentBet,
   resetGame,
 }) {
-  // Beräkna vinst baserat på resultat
+  useEffect(() => {
+    if (visible) {
+      console.log("Modal opened with gameResult:", gameResult);
+    }
+  }, [visible]);
+
   let payout = 0;
-  let title = "";
-  let message = "";
-  let isWin = false;
+  let title = ""; // Title for the modal
+  let message = ""; // Message to display in the modal
+  let isWin = false; // Flag to determine if the player won
 
   if (gameResult === "playerBlackjack") {
     payout = Math.floor(currentBet * 2.5);
@@ -28,9 +33,17 @@ export default function GameResultModal({
     payout = currentBet;
     title = "TIE GAME";
     message = `Your bet of ${currentBet} coins is returned.`;
-  } else {
+  } else if (gameResult === "playerBust" || gameResult === "dealerWin") {
+    isWin = false;
     title = "YOU LOST";
     message = `You lost ${currentBet} coins.`;
+  } else if (gameResult === "dealerBlackjack") {
+    isWin = false;
+    title = "DEALER BLACKJACK";
+    message = `You lost ${currentBet} coins.`;
+  } else {
+    console.error("Unknown game result:", gameResult);
+    return null;
   }
 
   const handlePlayAgain = () => {
