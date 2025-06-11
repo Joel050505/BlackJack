@@ -1,4 +1,4 @@
-import {Alert} from "react-native";
+import { Alert } from "react-native";
 
 // Dealer plays according to rules (must hit on 16 or less, stand on 17 or more)
 export const playDealer = async ({
@@ -145,7 +145,7 @@ export const determineWinner = (
   dealerFinalScore,
   endGameParams
 ) => {
-  const {setShowLosingModal, setShowWinningModal} = endGameParams;
+  const { setShowLosingModal, setShowWinningModal } = endGameParams;
   let result;
 
   if (dealerFinalScore > 21) {

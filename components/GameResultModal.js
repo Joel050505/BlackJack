@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text, Modal, TouchableOpacity} from "react-native";
+import { View, Text, Modal, TouchableOpacity } from "react-native";
 
 export default function WinningModal({
   visible,
