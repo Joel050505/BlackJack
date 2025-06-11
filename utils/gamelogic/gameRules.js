@@ -14,6 +14,8 @@ export const playDealer = async ({
   setGameResult,
   addCoins,
   resetGame,
+  setShowWinningModal, // Lägg till dessa två parametrar
+  setShowLosingModal,
 }) => {
   let currentDealerCards = [...dealerCards];
   let currentDealerScore = dealerScore;
@@ -37,6 +39,8 @@ export const playDealer = async ({
       setGameResult,
       addCoins,
       resetGame,
+      setShowLosingModal,
+      setShowWinningModal, // Pass these two parameters
     });
   }, 1000);
 };
@@ -49,32 +53,33 @@ export const endGame = ({
   setGameResult,
   addCoins,
   resetGame,
+  setShowWinningModal, // Lägg till dessa två parametrar
+  setShowLosingModal,
 }) => {
   setGamePhase("finished");
   setGameResult(result);
 
   let payout = 0;
-  let message = "";
 
   switch (result) {
     case "playerBlackjack":
       payout = Math.floor(currentBet * 2.5); // Blackjack pays 2.5x (1.5x + original bet)
-      message = `Blackjack! You won ${payout} coins!`;
+      setShowWinningModal(true); // Visa vinst-modal istället för Alert
       break;
     case "playerWin":
     case "dealerBust":
       payout = currentBet * 2; // Regular win pays 2x (1x + original bet)
-      message = `You won ${payout} coins!`;
+      setShowWinningModal(true); // Visa vinst-modal istället för Alert
       break;
     case "tie":
       payout = currentBet; // Return original bet
-      message = `It's a tie! Your bet of ${currentBet} coins is returned.`;
+      // Visa ingen modal vid oavgjort
       break;
     case "playerBust":
     case "dealerWin":
     case "dealerBlackjack":
       payout = 0; // Player loses bet (already subtracted)
-      message = `You lost ${currentBet} coins.`;
+      setShowLosingModal(true); // Visa förlust-modal istället för Alert
       break;
   }
 
@@ -82,15 +87,57 @@ export const endGame = ({
     addCoins(payout);
   }
 
-  Alert.alert("Game Over", message, [
-    {
-      text: "New Game",
-      onPress: () => {
-        resetGame();
-      },
-    },
-  ]);
+  // Ta bort Alert-anropet
 };
+// export const endGame = ({
+//   result,
+//   currentBet,
+//   setGamePhase,
+//   setGameResult,
+//   addCoins,
+//   resetGame,
+// }) => {
+//   setGamePhase("finished");
+//   setGameResult(result);
+
+//   let payout = 0;
+//   let message = "";
+
+//   switch (result) {
+//     case "playerBlackjack":
+//       payout = Math.floor(currentBet * 2.5); // Blackjack pays 2.5x (1.5x + original bet)
+//       message = `Blackjack! You won ${payout} coins!`;
+//       break;
+//     case "playerWin":
+//     case "dealerBust":
+//       payout = currentBet * 2; // Regular win pays 2x (1x + original bet)
+//       message = `You won ${payout} coins!`;
+//       break;
+//     case "tie":
+//       payout = currentBet; // Return original bet
+//       message = `It's a tie! Your bet of ${currentBet} coins is returned.`;
+//       break;
+//     case "playerBust":
+//     case "dealerWin":
+//     case "dealerBlackjack":
+//       payout = 0; // Player loses bet (already subtracted)
+//       message = `You lost ${currentBet} coins.`;
+//       break;
+//   }
+
+//   if (payout > 0) {
+//     addCoins(payout);
+//   }
+
+//   Alert.alert("Game Over", message, [
+//     {
+//       text: "New Game",
+//       onPress: () => {
+//         resetGame();
+//       },
+//     },
+//   ]);
+// };
 
 // Determine the winner and handle payouts
 export const determineWinner = (
@@ -98,14 +145,18 @@ export const determineWinner = (
   dealerFinalScore,
   endGameParams
 ) => {
+  const {setShowLosingModal, setShowWinningModal} = endGameParams;
   let result;
 
   if (dealerFinalScore > 21) {
     result = "dealerBust";
+    setShowWinningModal(true);
   } else if (playerFinalScore > dealerFinalScore) {
     result = "playerWin";
+    setShowWinningModal(true);
   } else if (dealerFinalScore > playerFinalScore) {
     result = "dealerWin";
+    setShowLosingModal(true);
   } else {
     result = "tie";
   }

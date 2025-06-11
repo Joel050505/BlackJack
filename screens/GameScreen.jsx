@@ -15,10 +15,12 @@ import {useCoins} from "../context/CoinsContext";
 import ChipCollection from "../components/ChipCollection";
 import {BettingControls, GameplayControls} from "../components/GameControls";
 import {getRandomCard} from "../utils/gamelogic/getRandomCard";
+import WinningModal from "../components/WinningModal";
 import {
   isBlackjack,
   calculateHandValue,
 } from "../utils/gamelogic/blackJackLogic";
+
 import {
   playDealer,
   determineWinner,
@@ -40,6 +42,10 @@ export default function GameScreen({navigation}) {
   const [dealerCards, setDealerCards] = useState([]);
   const [dealerScore, setDealerScore] = useState(0);
   const [showDealerCard, setShowDealerCard] = useState(false);
+
+  // Modals for winning and losing
+  const [showWinningModal, setShowWinningModal] = useState(false);
+  const [showLosingModal, setShowLosingModal] = useState(false);
 
   const [gameResult, setGameResult] = useState("");
 
@@ -95,6 +101,8 @@ export default function GameScreen({navigation}) {
           setGameResult,
           addCoins,
           resetGame,
+          setShowWinningModal, // Lägg till dessa
+          setShowLosingModal,
         });
       } else {
         // Player blackjack wins
@@ -105,6 +113,8 @@ export default function GameScreen({navigation}) {
           setGameResult,
           addCoins,
           resetGame,
+          setShowWinningModal, // Lägg till dessa
+          setShowLosingModal,
         });
       }
     } else if (isBlackjack(newDealerCards, newDealerScore)) {
@@ -117,6 +127,8 @@ export default function GameScreen({navigation}) {
         setGameResult,
         addCoins,
         resetGame,
+        setShowWinningModal, // Lägg till dessa
+        setShowLosingModal,
       });
     }
   };
@@ -142,6 +154,8 @@ export default function GameScreen({navigation}) {
         setGameResult,
         addCoins,
         resetGame,
+        setShowWinningModal, // Lägg till dessa
+        setShowLosingModal,
       });
     } else if (newPlayerScore === 21) {
       // Auto stand on 21
@@ -173,6 +187,8 @@ export default function GameScreen({navigation}) {
         setGameResult,
         addCoins,
         resetGame,
+        setShowWinningModal,
+        setShowLosingModal,
       });
     }, 1000);
   };
@@ -221,7 +237,7 @@ export default function GameScreen({navigation}) {
       className="flex-1 w-full h-full"
       resizeMode="cover"
     >
-      {/* Header */}
+      {/* Header with Icons */}
       <View className="w-full flex-row justify-between items-start px-5 pt-20">
         <TouchableOpacity
           className="bg-black/35 rounded-xl p-2"
@@ -247,7 +263,6 @@ export default function GameScreen({navigation}) {
           <FontAwesome5 name="cog" size={24} color="white" />
         </TouchableOpacity>
       </View>
-
       {/* Dealer Cards Display */}
       {isPlaying && (
         <View className="flex flew-row items-center justify-center mt-10">
@@ -280,7 +295,6 @@ export default function GameScreen({navigation}) {
           </View>
         </View>
       )}
-
       {/* Current Bet Display */}
       <View className="flex-1 items-center justify-center">
         <Text className="text-white text-sm mb-2">Current Bet</Text>
@@ -307,7 +321,6 @@ export default function GameScreen({navigation}) {
           </Text>
         )}
       </View>
-
       {/* Player Cards Display */}
       {isPlaying && (
         <View className="flex items-center justify-center mb-10">
@@ -333,7 +346,6 @@ export default function GameScreen({navigation}) {
           </View>
         </View>
       )}
-
       {/* Game Controls */}
       <View className="px-5 pb-10">
         {gamePhase === "betting" && (
@@ -366,8 +378,19 @@ export default function GameScreen({navigation}) {
           />
         )}
       </View>
-
       {/* Modals */}
+      {showWinningModal && (
+        <WinningModal
+          visible={showWinningModal}
+          onClose={() => setShowWinningModal(false)}
+          gameResult={gameResult}
+          currentBet={currentBet}
+          addCoins={addCoins}
+          resetGame={resetGame}
+        />
+      )}
+
+      {/* Game Menu Modal */}
       <GameMenuModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
@@ -375,6 +398,7 @@ export default function GameScreen({navigation}) {
         resetGame={resetGame}
       />
 
+      {/* Shop modal */}
       <ShopMenuModal
         visible={shopModalVisible}
         onClose={() => setShopModalVisible(false)}

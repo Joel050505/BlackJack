@@ -24,7 +24,11 @@ export const playSound = async (soundFile) => {
 export const playPokerChipSound = () => {
   return playSound(require("../assets/sounds/poker_chips.mp3"));
 };
-
+// For card dealing sound
 export const PlayAllInSound = () => {
   return playSound(require("../assets/sounds/allinpush_chips.mp3"));
+};
+// For background music
+export const bgMusic = () => {
+  return playSound(require("../assets/sounds/bg-sound.mp3"));
 };
