@@ -1,7 +1,7 @@
 import React from "react";
-import { View, Text, Modal, TouchableOpacity } from "react-native";
+import {View, Text, Modal, TouchableOpacity} from "react-native";
 
-export default function WinningModal({
+export default function GameResultModal({
   visible,
   onClose,
   gameResult,
