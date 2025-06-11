@@ -87,9 +87,9 @@ export default function GameResultModal({
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={onClose} className="mt-3">
+          {/* <TouchableOpacity onPress={onClose} className="mt-3">
             <Text className="text-gray-500 text-center">Close</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </Modal>

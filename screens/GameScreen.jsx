@@ -164,7 +164,34 @@ export default function GameScreen({navigation}) {
       });
     } else if (newPlayerScore === 21) {
       // Auto stand on 21
-      handleStand();
+      setShowDealerCard(true);
+      // handleStand();
+      endGame({
+        result: "playerWin", // Använd vanlig vinst, inte playerTwentyOne
+        currentBet,
+        setGamePhase,
+        setGameResult,
+        addCoins,
+        resetGame,
+        setShowWinningModal,
+        setShowLosingModal,
+        setShowTieModal,
+      });
+      // Istället för att köra handleStand direkt, vänta på att score uppdateras
+      // setTimeout(() => {
+      //   handleStand();
+      // }, 300);
+      // endGame({
+      //   result: "playerTwentyOne", // Nytt resultat specifikt för 21 via hit
+      //   currentBet,
+      //   setGamePhase,
+      //   setGameResult,
+      //   addCoins,
+      //   resetGame,
+      //   setShowWinningModal,
+      //   setShowLosingModal,
+      //   setShowTieModal,
+      // });
     }
   }
 
@@ -311,7 +338,7 @@ export default function GameScreen({navigation}) {
           </Text>
         </View>
 
-        {gameResult && (
+        {/* {gameResult && (
           <Text className="text-white text-lg mt-4 text-center">
             {gameResult.includes("player") && gameResult.includes("Win")
               ? "You Win!"
@@ -325,7 +352,7 @@ export default function GameScreen({navigation}) {
               ? "Bust!"
               : ""}
           </Text>
-        )}
+        )} */}
       </View>
       {/* Player Cards Display */}
       {isPlaying && (

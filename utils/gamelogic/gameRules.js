@@ -46,7 +46,7 @@ export const playDealer = async ({
 };
 
 // End game and handle payouts
-export const endGame = ({
+export function endGame({
   result,
   currentBet,
   setGamePhase,
@@ -56,7 +56,7 @@ export const endGame = ({
   setShowWinningModal,
   setShowLosingModal,
   setShowTieModal,
-}) => {
+}) {
   setGamePhase("finished");
   setGameResult(result);
 
@@ -67,6 +67,10 @@ export const endGame = ({
       payout = Math.floor(currentBet * 2.5); // Blackjack pays 2.5x (1.5x + original bet)
       setShowWinningModal(true); // Visa vinst-modal istället för Alert
       break;
+    // case "playerTwentyOne":
+    //   payout = currentBet * 2;
+    //   setShowWinningModal(true);
+    //   break;
     case "playerWin":
     case "dealerBust":
       payout = currentBet * 2; // Regular win pays 2x (1x + original bet)
@@ -76,7 +80,6 @@ export const endGame = ({
       payout = currentBet; // Return original bet
       setShowTieModal(true);
 
-      // Visa ingen modal vid oavgjort
       break;
     case "playerBust":
     case "dealerWin":
@@ -89,9 +92,7 @@ export const endGame = ({
   if (payout > 0) {
     addCoins(payout);
   }
-
-  // Ta bort Alert-anropet
-};
+}
 
 // Determine the winner and handle payouts
 export const determineWinner = (
@@ -114,6 +115,9 @@ export const determineWinner = (
   } else {
     result = "tie";
   }
+
+  // Logga resultatet
+  console.log("Game result determined:", result);
 
   endGame({
     result,
