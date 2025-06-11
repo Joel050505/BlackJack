@@ -1,6 +1,4 @@
-// utils/gamelogic/blackjackLogic.js
-
-export const calculateHandValue = (cards) => {
+export function calculateHandValue(cards) {
   let value = 0;
   let aces = 0;
 
@@ -21,10 +19,10 @@ export const calculateHandValue = (cards) => {
   }
 
   return value;
-};
+}
 
-export const isBlackjack = (cards, score) => {
+export function isBlackjack(cards, score) {
   return cards.length === 2 && score === 21;
-};
+}
 
 // export const shouldDealerHit = (score) => score < 17;
