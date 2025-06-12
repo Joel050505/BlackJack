@@ -50,7 +50,7 @@ export default function PlayerHand({playerCards, playerScore}) {
         // Animera kortet till rätt position
         Animated.timing(anim, {
           toValue: 0, // Slutposition
-          duration: 500, // Längd på animation
+          duration: 300, // Längd på animation
           delay: index * 200, // Fördröjning baserat på kortets position
           useNativeDriver: true,
           easing: Easing.out(Easing.ease),
@@ -71,14 +71,11 @@ export default function PlayerHand({playerCards, playerScore}) {
             <Animated.Image
               key={index}
               source={card?.image}
+              className="w-[176] h-[224] m-1 absolute"
               style={{
-                width: 176, // Kortbredd
-                height: 224, // Korthöjd
-                margin: 4,
-                position: "absolute",
-                left: index * 30, // Varje kort läggs lite till höger
+                left: index * 30,
                 transform: [{translateX: animations[index] || 0}],
-                zIndex: index, // Senare kort hamnar överst
+                zIndex: index,
               }}
               resizeMode="contain"
             />

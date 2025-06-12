@@ -40,6 +40,7 @@
 //     </View>
 //   );
 // }
+
 import React, {useState, useEffect} from "react";
 import {View, Text, Animated, Easing} from "react-native";
 
@@ -68,7 +69,7 @@ export default function DealerHand({
         // Animera kortet till rätt position
         Animated.timing(anim, {
           toValue: 0, // Slutposition
-          duration: 500, // Längd på animation
+          duration: 300, // Längd på animation
           delay: index * 200, // Fördröjning baserat på kortets position
           useNativeDriver: true,
           easing: Easing.out(Easing.ease),
@@ -81,37 +82,32 @@ export default function DealerHand({
   }, [dealerCards]); // Kör endast när dealerCards ändras
 
   return (
-    <View className="items-center justify-center  w-full mb-4">
+    <View className="items-center justify-center w-full mb-4">
       {/* Poäng */}
       <Text className="text-white text-lg font-semibold bg-black/50 px-3 py-1 rounded-lg mb-2">
         {dealerScore}
       </Text>
 
-      <View className="flex-row items-center justify-center gap-10">
-        {/* Korten */}
-        <View style={{height: 230, width: 200, position: "relative"}}>
-          {dealerCards.map((card, index) => (
-            <Animated.Image
-              key={index}
-              source={
-                // Om det är andra kortet och vi inte ska visa det, visa baksidan
-                index === 1 && !showDealerCard
-                  ? require("../../assets/image/card-back2.png")
-                  : card?.image
-              }
-              style={{
-                width: 176, // Kortbredd
-                height: 224, // Korthöjd
-                margin: 4,
-                position: "absolute",
-                left: index * 30, // Varje kort läggs lite till höger
-                transform: [{translateX: animations[index] || 0}],
-                zIndex: index, // Senare kort hamnar överst
-              }}
-              resizeMode="contain"
-            />
-          ))}
-        </View>
+      {/* Korten */}
+      <View className="h-[230] w-[200] relative">
+        {dealerCards.map((card, index) => (
+          <Animated.Image
+            key={index}
+            source={
+              // Om det är andra kortet och vi inte ska visa det, visa baksidan
+              index === 1 && !showDealerCard
+                ? require("../../assets/image/card-back2.png")
+                : card?.image
+            }
+            className="w-[176] h-[224] m-1 absolute"
+            style={{
+              left: index * 30, // Dynamiskt värde, måste vara i style
+              transform: [{translateX: animations[index] || 0}], // Animation måste vara i style
+              zIndex: index, // Dynamiskt värde, måste vara i style
+            }}
+            resizeMode="contain"
+          />
+        ))}
       </View>
     </View>
   );
