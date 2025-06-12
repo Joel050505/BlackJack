@@ -64,23 +64,21 @@ export default function PlayerHand({playerCards, playerScore}) {
 
   return (
     <View className="items-center justify-center w-full mb-4">
-      <View className="flex-row items-center justify-center">
-        {/* Korten */}
-        <View style={{height: 230, width: 200, position: "relative"}}>
-          {playerCards.map((card, index) => (
-            <Animated.Image
-              key={index}
-              source={card?.image}
-              className="w-[176] h-[224] m-1 absolute"
-              style={{
-                left: index * 30,
-                transform: [{translateX: animations[index] || 0}],
-                zIndex: index,
-              }}
-              resizeMode="contain"
-            />
-          ))}
-        </View>
+      {/* Korten */}
+      <View style={{height: 230, width: 200, position: "relative"}}>
+        {playerCards.map((card, index) => (
+          <Animated.Image
+            key={index}
+            source={card?.image}
+            className="w-[176] h-[224] m-1 absolute"
+            style={{
+              left: index * 30,
+              transform: [{translateX: animations[index] || 0}],
+              zIndex: index,
+            }}
+            resizeMode="contain"
+          />
+        ))}
       </View>
 
       {/* Poäng */}
