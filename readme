@@ -9,7 +9,8 @@ Todos
    
 3. ✅  Ta bort mynt efter bet and tryggt deal (Klart)
 4. ✅ Få tillbaka mynt om vunnit, annars ta bort ifall man förlorar (blackjack = 2.25 insatsen) (samma tal = +- 0) (Klart)
-5.
+5. Man ser gamla reulatet i en millisekund.
+5.b Fixa till gamemenumodal, titta på vad exakt vad som ska stå och vilka knappar samt alrten
 6. När man vinner kommer en modal upp som visar hur mycket man vunnit och gratulation istället för en ful Alert
 7. Byta back-card bilden, den har fula svarta hörn.
 8. ✅ Fungerande Hit or Stand knappar.
