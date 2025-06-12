@@ -63,9 +63,9 @@ export default function PlayerHand({playerCards, playerScore}) {
   }, [playerCards]); // Kör endast när playerCards ändras
 
   return (
-    <View className="items-center justify-center w-full mb-4">
+    <View className="flex items-center justify-center w-full mb-4">
       {/* Korten */}
-      <View style={{height: 230, width: 200, position: "relative"}}>
+      <View className="h-[230] w-[200] relative mr-10">
         {playerCards.map((card, index) => (
           <Animated.Image
             key={index}
