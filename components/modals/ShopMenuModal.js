@@ -1,10 +1,10 @@
 import React from "react";
-import { Text, View, Modal, TouchableOpacity, ScrollView } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useCoins } from "../context/CoinsContext";
+import {Text, View, Modal, TouchableOpacity, ScrollView} from "react-native";
+import {Ionicons} from "@expo/vector-icons";
+import {useCoins} from "../../context/CoinsContext";
 
-export default function ShopMenuModal({ visible, onClose }) {
-  const { coins, addCoins } = useCoins();
+export default function ShopMenuModal({visible, onClose}) {
+  const {coins, addCoins} = useCoins();
 
   const handleFreeCoins = (amount) => {
     // Logic to handle free coins

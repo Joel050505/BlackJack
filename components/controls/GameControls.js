@@ -1,6 +1,6 @@
 import {View, TouchableOpacity, Text} from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import {PlayAllInSound} from "../utils/PlaySound";
+import {PlayAllInSound} from "../../utils/PlaySound";
 
 //////////////////////////////
 //// Betting Controls ////////

@@ -8,14 +8,17 @@ import {
   Alert,
 } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import GameMenuModal from "../components/GameMenuModal";
-import ShopMenuModal from "../components/ShopMenuModal";
+import GameMenuModal from "../components/modals/GameMenuModal";
+import ShopMenuModal from "../components/modals/ShopMenuModal";
 import {handleBackConfirmation} from "../utils/handleBackConfirmation";
 import {useCoins} from "../context/CoinsContext";
-import ChipCollection from "../components/ChipCollection";
-import {BettingControls, GameplayControls} from "../components/GameControls";
+import ChipCollection from "../components/controls/ChipCollection";
+import {
+  BettingControls,
+  GameplayControls,
+} from "../components/controls/GameControls";
 import {getRandomCard} from "../utils/gamelogic/getRandomCard";
-import GameResultModal from "../components/GameResultModal";
+import GameResultModal from "../components/modals/GameResultModal";
 import {
   isBlackjack,
   calculateHandValue,
@@ -26,6 +29,10 @@ import {
   determineWinner,
   endGame,
 } from "../utils/gamelogic/gameRules";
+import HeaderWithIcons from "../components/layout/HeaderWithIcons";
+import DealerHand from "../components/gameComponents/DealerHand";
+import CurrentBetDisplay from "../components/gameComponents/CurrentBetDisplay";
+import PlayerHand from "../components/gameComponents/PlayerHand";
 
 export default function GameScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -258,7 +265,12 @@ export default function GameScreen({navigation}) {
       resizeMode="cover"
     >
       {/* Header with Icons */}
-      <View className="w-full flex-row justify-between items-start px-5 pt-20">
+      <HeaderWithIcons
+        coins={coins}
+        onShopPress={() => setShopModalVisible(true)}
+        onSettingsPress={() => setModalVisible(true)}
+      />
+      {/* <View className="w-full flex-row justify-between items-start px-5 pt-20">
         <TouchableOpacity
           className="bg-black/35 rounded-xl p-2"
           onPress={() => setShopModalVisible(true)}
@@ -282,10 +294,22 @@ export default function GameScreen({navigation}) {
         >
           <FontAwesome5 name="cog" size={24} color="white" />
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Dealer Cards Display */}
-      {isPlaying && (
+      <View className="flex-1 justify-center items-center px-4 mb-10">
+        {/* Dealer Cards Display */}
+
+        {isPlaying && (
+          <DealerHand
+            dealerCards={dealerCards}
+            showDealerCard={showDealerCard}
+            getVisibleDealerScore={getVisibleDealerScore}
+            dealerScore={dealerScore}
+          />
+        )}
+
+        {/* {isPlaying && (
         <View className="flex flew-row items-center justify-center mt-10">
           <Text className="text-white text-lg mb-2">Dealer</Text>
           <View className="flex-row items-center justify-center">
@@ -315,9 +339,12 @@ export default function GameScreen({navigation}) {
             </View>
           </View>
         </View>
-      )}
-      {/* Current Bet Display */}
-      <View className="flex-1 items-center justify-center">
+      )} */}
+        {/* Current Bet Display */}
+
+        <CurrentBetDisplay currentBet={currentBet} />
+
+        {/* <View className="flex-1 items-center justify-center">
         <Text className="text-white text-sm mb-2">Current Bet</Text>
         <View className="flex-row items-center ">
           <FontAwesome5 name="coins" size={20} color="#FFC107" />
@@ -325,10 +352,18 @@ export default function GameScreen({navigation}) {
             {currentBet}
           </Text>
         </View>
-      </View>
+      </View> */}
 
-      {/* Player Cards Display */}
-      {isPlaying && (
+        {/* Player Cards Display */}
+        {isPlaying && (
+          <PlayerHand
+            playerCards={playerCards}
+            playerScore={playerScore}
+            isBlackjack={isBlackjack}
+          />
+        )}
+      </View>
+      {/* {isPlaying && (
         <View className="flex items-center justify-center mb-10">
           <Text className="text-white text-lg mb-2">Player</Text>
           <View className="flex flex-row items-center align-center justify-center">
@@ -351,7 +386,7 @@ export default function GameScreen({navigation}) {
             </View>
           </View>
         </View>
-      )}
+      )} */}
       {/* Game Controls */}
       <View className="px-5 pb-10">
         {gamePhase === "betting" && (
