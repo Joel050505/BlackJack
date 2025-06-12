@@ -395,6 +395,8 @@ export default function GameScreen({navigation}) {
           currentBet={currentBet}
           addCoins={addCoins}
           resetGame={resetGame}
+          playerScore={playerScore}
+          dealerScore={dealerScore}
         />
       )}
 
@@ -406,6 +408,8 @@ export default function GameScreen({navigation}) {
           gameResult={gameResult}
           currentBet={currentBet}
           resetGame={resetGame}
+          playerScore={playerScore}
+          dealerScore={dealerScore}
         />
       )}
 
@@ -417,6 +421,8 @@ export default function GameScreen({navigation}) {
           gameResult={gameResult}
           currentBet={currentBet}
           resetGame={resetGame}
+          playerScore={playerScore}
+          dealerScore={dealerScore}
         />
       )}
 
