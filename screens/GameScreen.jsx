@@ -33,6 +33,8 @@ import HeaderWithIcons from "../components/layout/HeaderWithIcons";
 import DealerHand from "../components/gameComponents/DealerHand";
 import CurrentBetDisplay from "../components/gameComponents/CurrentBetDisplay";
 import PlayerHand from "../components/gameComponents/PlayerHand";
+import {playCardDealSound} from "../utils/PlaySound";
+import {playBackgroundMusic} from "../utils/PlaySound";
 
 export default function GameScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -59,10 +61,13 @@ export default function GameScreen({navigation}) {
 
   const {coins, addCoins, subtractCoins} = useCoins();
 
+  playBackgroundMusic();
+
   // Deal initial cards
   const handleDeal = () => {
     if (currentBet === 0) {
       Alert.alert("No Bet", "Please place a bet before dealing!");
+
       return;
     }
 
@@ -73,7 +78,11 @@ export default function GameScreen({navigation}) {
       );
       return;
     }
-
+    for (let i = 0; i < 2; i++) {
+      setTimeout(() => {
+        playCardDealSound();
+      }, i * 500); // 300ms delay between each sound
+    }
     // Subtract bet from coins
     subtractCoins(currentBet);
 
@@ -246,18 +255,6 @@ export default function GameScreen({navigation}) {
     }
   };
 
-  // Get visible dealer score (hide second card value until revealed)
-  const getVisibleDealerScore = () => {
-    if (!showDealerCard && dealerCards.length > 0) {
-      // Only show first card value
-      const firstCard = dealerCards[0];
-      if (firstCard.value === 1) return 11; // Ace
-      if (firstCard.value > 10) return 10; // Face card
-      return firstCard.value;
-    }
-    return dealerScore;
-  };
-
   return (
     <ImageBackground
       source={require("../assets/image/board.jpg")}
@@ -270,31 +267,6 @@ export default function GameScreen({navigation}) {
         onShopPress={() => setShopModalVisible(true)}
         onSettingsPress={() => setModalVisible(true)}
       />
-      {/* <View className="w-full flex-row justify-between items-start px-5 pt-20">
-        <TouchableOpacity
-          className="bg-black/35 rounded-xl p-2"
-          onPress={() => setShopModalVisible(true)}
-        >
-          <View className="flex-row items-center gap-3">
-            <FontAwesome5
-              name="coins"
-              size={16}
-              color="#FFC107"
-              style={{marginLeft: 5}}
-            />
-            <Text className="text-yellow-400 font-bold text-left text-base">
-              {coins}
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          className="bg-black/35 p-2 rounded-full items-center"
-          onPress={() => setModalVisible(true)}
-        >
-          <FontAwesome5 name="cog" size={24} color="white" />
-        </TouchableOpacity>
-      </View> */}
 
       {/* Dealer Cards Display */}
       <View className="flex-1 justify-center items-center px-4 mb-10">
@@ -304,55 +276,13 @@ export default function GameScreen({navigation}) {
           <DealerHand
             dealerCards={dealerCards}
             showDealerCard={showDealerCard}
-            getVisibleDealerScore={getVisibleDealerScore}
             dealerScore={dealerScore}
           />
         )}
 
-        {/* {isPlaying && (
-        <View className="flex flew-row items-center justify-center mt-10">
-          <Text className="text-white text-lg mb-2">Dealer</Text>
-          <View className="flex-row items-center justify-center">
-            <View className="flex-row items-center justify-center">
-              {dealerCards.map((card, index) => (
-                <Image
-                  key={index}
-                  source={
-                    index === 1 && !showDealerCard
-                      ? require("../assets/image/card-back2.png") // Hide second card
-                      : card?.image
-                  }
-                  className="w-44 h-56 mx-1"
-                  style={{
-                    marginLeft: index > 0 ? -130 : 0,
-                  }}
-                  resizeMode="contain"
-                />
-              ))}
-            </View>
-
-            <View>
-              <Text className="text-white text-xl mt-2 bg-black/50 px-3 py-1 rounded">
-                {getVisibleDealerScore()}
-                {dealerScore > 21 && showDealerCard}
-              </Text>
-            </View>
-          </View>
-        </View>
-      )} */}
         {/* Current Bet Display */}
 
         <CurrentBetDisplay currentBet={currentBet} />
-
-        {/* <View className="flex-1 items-center justify-center">
-        <Text className="text-white text-sm mb-2">Current Bet</Text>
-        <View className="flex-row items-center ">
-          <FontAwesome5 name="coins" size={20} color="#FFC107" />
-          <Text className="text-yellow-400 text-2xl font-bold ml-2">
-            {currentBet}
-          </Text>
-        </View>
-      </View> */}
 
         {/* Player Cards Display */}
         {isPlaying && (
@@ -363,30 +293,7 @@ export default function GameScreen({navigation}) {
           />
         )}
       </View>
-      {/* {isPlaying && (
-        <View className="flex items-center justify-center mb-10">
-          <Text className="text-white text-lg mb-2">Player</Text>
-          <View className="flex flex-row items-center align-center justify-center">
-            <View className="flex-row items-center justify-center">
-              {playerCards.map((card, index) => (
-                <Image
-                  key={index}
-                  source={card?.image}
-                  className="w-44 h-56 mx-1"
-                  style={{marginLeft: index > 0 ? -131 : 0}}
-                  resizeMode="contain"
-                />
-              ))}
-            </View>
-            <View>
-              <Text className="text-white text-xl mt-2 bg-black/50 px-3 py-1 rounded">
-                {playerScore}
-                {isBlackjack(playerCards, playerScore)}
-              </Text>
-            </View>
-          </View>
-        </View>
-      )} */}
+
       {/* Game Controls */}
       <View className="px-5 pb-10">
         {gamePhase === "betting" && (

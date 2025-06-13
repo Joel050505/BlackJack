@@ -1,7 +1,7 @@
-import React from "react";
 import {Text, View, Modal, TouchableOpacity, ScrollView} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {useCoins} from "../../context/CoinsContext";
+import {kachingSound} from "../../utils/PlaySound";
 
 export default function ShopMenuModal({visible, onClose}) {
   const {coins, addCoins} = useCoins();
@@ -9,9 +9,8 @@ export default function ShopMenuModal({visible, onClose}) {
   const handleFreeCoins = (amount) => {
     // Logic to handle free coins
     // Set confirmation to true to prevent further claims
-
+    kachingSound();
     addCoins(amount); // Add the specified amount of coins
-
     onClose(); // Close the modal after claiming
     alert(`You have claimed ${amount} free coins!`);
   };

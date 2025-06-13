@@ -1,55 +1,7 @@
-// import {View, Text, Image} from "react-native";
-
-// // const cardBackImage = require("../../assets/image/card-back2.png");
-// // const cardBackImage = require("../assets/image/card-back2.png");
-// export default function DealerHand({
-//   dealerCards,
-//   showDealerCard,
-//   getVisibleDealerScore,
-//   dealerScore,
-// }) {
-//   return (
-//     <View className="items-center justify-center w-full mb-4">
-//       <Text className="text-white text-lg mb-2">Dealer</Text>
-//       <View className="flex-row items-center justify-center">
-//         <View className="flex-row items-center justify-center">
-//           {dealerCards.map((card, index) => (
-//             <Image
-//               key={index}
-//               source={
-//                 index === 1 && !showDealerCard
-//                   ? require("../../assets/image/card-back2.png") // Hide second card
-//                   : card?.image
-//               }
-//               className="w-44 h-56 mx-1"
-//               style={{
-//                 marginLeft: index > 0 ? -130 : 0,
-//               }}
-//               resizeMode="contain"
-//             />
-//           ))}
-//         </View>
-
-//         <View>
-//           <Text className="text-white text-xl mt-2 bg-black/50 px-3 py-1 rounded">
-//             {getVisibleDealerScore()}
-//             {dealerScore > 21 && showDealerCard}
-//           </Text>
-//         </View>
-//       </View>
-//     </View>
-//   );
-// }
-
-import React, {useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import {View, Text, Animated, Easing} from "react-native";
 
-export default function DealerHand({
-  dealerCards,
-  showDealerCard,
-  getVisibleDealerScore,
-  dealerScore,
-}) {
+export default function DealerHand({dealerCards, showDealerCard, dealerScore}) {
   // Skapa animationsvärden för varje kort
   const [animations, setAnimations] = useState([]);
 
@@ -69,9 +21,9 @@ export default function DealerHand({
         // Animera kortet till rätt position
         Animated.timing(anim, {
           toValue: 0, // Slutposition
-          duration: 300, // Längd på animation
+          duration: 500, // Längd på animation
           delay: index * 200, // Fördröjning baserat på kortets position
-          useNativeDriver: true,
+          useNativeDriver: false,
           easing: Easing.out(Easing.ease),
         }).start();
       }
@@ -81,11 +33,23 @@ export default function DealerHand({
     setAnimations(newAnimations);
   }, [dealerCards]); // Kör endast när dealerCards ändras
 
+  // Get visible dealer score (hide second card value until revealed)
+  const getVisibleDealerScore = () => {
+    if (!showDealerCard && dealerCards.length > 0) {
+      // Only show first card value
+      const firstCard = dealerCards[0];
+      if (firstCard.value === 1) return 11; // Ace
+      if (firstCard.value > 10) return 10; // Face card
+      return firstCard.value;
+    }
+    return dealerScore;
+  };
+
   return (
     <View className="items-center justify-center w-full mb-4">
       {/* Poäng */}
       <Text className="text-white text-lg font-semibold bg-black/50 px-3 py-1 rounded-lg mb-2">
-        {dealerScore}
+        {getVisibleDealerScore(dealerScore)}
       </Text>
 
       {/* Korten */}

@@ -46,6 +46,7 @@ function App() {
     navigate: navigate,
     goBack: () => navigate("Home"),
   };
+  // Starta bakgrundsmusik
 
   return (
     <CoinsProvider>

@@ -10,11 +10,11 @@ export default function GameResultModal({
   playerScore,
   dealerScore,
 }) {
-  useEffect(() => {
-    if (visible) {
-      console.log("Modal opened with gameResult:", gameResult);
-    }
-  }, [visible]);
+  // useEffect(() => {
+  //   if (visible) {
+  //     console.log("Modal opened with gameResult:", gameResult);
+  //   }
+  // }, [visible]);
 
   let payout = 0;
   let title = ""; // Title for the modal

@@ -1,34 +1,6 @@
-// import {View, Text, Image} from "react-native";
-
-// export default function PlayerHand({playerCards, playerScore, isBlackjack}) {
-//   return (
-//     <View className="items-center justify-center w-full mb-4">
-//       <Text className="text-white text-lg mb-2">Player</Text>
-//       <View className="flex-row items-center justify-center">
-//         <View className="flex-row items-center justify-center">
-//           {playerCards.map((card, index) => (
-//             <Image
-//               key={index}
-//               source={card?.image}
-//               className="w-44 h-56 mx-1"
-//               style={{marginLeft: index > 0 ? -131 : 0}}
-//               resizeMode="contain"
-//             />
-//           ))}
-//         </View>
-//         <View>
-//           <Text className="text-white text-xl mt-2 bg-black/50 px-3 py-1 rounded">
-//             {playerScore}
-//             {isBlackjack(playerCards, playerScore)}
-//           </Text>
-//         </View>
-//       </View>
-//     </View>
-//   );
-// }
-
-import React, {useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import {View, Text, Animated, Easing} from "react-native";
+import {playCardDealSound} from "../../utils/PlaySound";
 
 export default function PlayerHand({playerCards, playerScore}) {
   // Skapa animationsvärden för varje kort
@@ -47,12 +19,15 @@ export default function PlayerHand({playerCards, playerScore}) {
         const anim = new Animated.Value(300);
         newAnimations[index] = anim;
 
+        // playCardDealSound();
+        // Spela ljud när kortet läggs till
+
         // Animera kortet till rätt position
         Animated.timing(anim, {
           toValue: 0, // Slutposition
-          duration: 300, // Längd på animation
+          duration: 1000, // Längd på animation
           delay: index * 200, // Fördröjning baserat på kortets position
-          useNativeDriver: true,
+          useNativeDriver: false,
           easing: Easing.out(Easing.ease),
         }).start();
       }

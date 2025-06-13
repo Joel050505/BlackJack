@@ -1,4 +1,5 @@
-// Dealer plays according to rules (must hit on 16 or less, stand on 17 or more)
+import {losingSound} from "../PlaySound";
+
 export const playDealer = async ({
   dealerCards,
   dealerScore,
@@ -74,18 +75,27 @@ export function endGame({
     case "playerWin":
     case "dealerBust":
       payout = currentBet * 2; // Regular win pays 2x (1x + original bet)
-      setShowWinningModal(true); // Visa vinst-modal istället för Alert
+
+      setTimeout(() => {
+        setShowWinningModal(true); // Visa vinst-modal istället för Alert
+      }, 200); // Fördröjning för att matcha animationen
+
       break;
     case "tie":
       payout = currentBet; // Return original bet
-      setShowTieModal(true);
+      setTimeout(() => {
+        setShowTieModal(true); // Visa oavgjort-modal istället för Alert
+      }, 200); // Fördröjning för att matcha animationen
 
       break;
     case "playerBust":
     case "dealerWin":
     case "dealerBlackjack":
       payout = 0; // Player loses bet (already subtracted)
-      setShowLosingModal(true); // Visa förlust-modal istället för Alert
+      losingSound();
+      setTimeout(() => {
+        setShowLosingModal(true);
+      }, 200); // Visa förlust-modal istället för Alert
       break;
   }
 
