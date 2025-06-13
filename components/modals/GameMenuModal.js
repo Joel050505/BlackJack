@@ -1,5 +1,9 @@
 import { Text, View, Modal, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Audio } from "expo-av";
+import { useState } from "react";
+import Entypo from "@expo/vector-icons/Entypo";
+import { playBackgroundMusic } from "../../utils/PlaySound";
 
 export default function GameMenuModal({
   visible,
@@ -7,6 +11,14 @@ export default function GameMenuModal({
   onBackToMenu,
   resetGame,
 }) {
+  const [showSound, setShowSound] = useState(true);
+
+  const onMute = () => {
+    setShowSound(!showSound);
+    Audio.setIsEnabledAsync(showSound);
+    playBackgroundMusic(showSound ? 0.1 : 0);
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -24,6 +36,13 @@ export default function GameMenuModal({
             <Ionicons name="close-circle" size={28} color="white" />
           </TouchableOpacity>
 
+          {/* <TouchableOpacity className="absolute left-3 top-3" onPress={onMute}>
+            {showSound ? (
+              <Entypo name="sound" size={24} color="white" />
+            ) : (
+              <Entypo name="sound-mute" size={24} color="white" />
+            )}
+          </TouchableOpacity> */}
           <Text className="text-white text-xl font-bold mb-8 mt-4">
             Game Settings
           </Text>
@@ -45,7 +64,6 @@ export default function GameMenuModal({
             className="bg-orange-500 py-2 rounded-lg mb-4 w-full items-center"
             onPress={() => {
               resetGame();
-              onClose();
             }}
           >
             <View className="flex-row items-center justify-center">
@@ -58,7 +76,10 @@ export default function GameMenuModal({
           {/* Back to main menu button */}
           <TouchableOpacity
             className="bg-red-600 py-2 rounded-lg mb-4 w-full items-center"
-            onPress={onBackToMenu}
+            onPress={() => {
+              onBackToMenu();
+              Audio.setIsEnabledAsync(false); // Stop background music
+            }}
           >
             <View className="flex-row items-center justify-center">
               <Ionicons name="arrow-back" size={24} color="white" />

@@ -1,23 +1,16 @@
-import {useEffect, useState} from "react";
-import {
-  View,
-  ImageBackground,
-  TouchableOpacity,
-  Text,
-  Image,
-  Alert,
-} from "react-native";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { useState } from "react";
+import { View, ImageBackground, Alert } from "react-native";
+
 import GameMenuModal from "../components/modals/GameMenuModal";
 import ShopMenuModal from "../components/modals/ShopMenuModal";
-import {handleBackConfirmation} from "../utils/handleBackConfirmation";
-import {useCoins} from "../context/CoinsContext";
+import { handleBackConfirmation } from "../utils/handleBackConfirmation";
+import { useCoins } from "../context/CoinsContext";
 import ChipCollection from "../components/controls/ChipCollection";
 import {
   BettingControls,
   GameplayControls,
 } from "../components/controls/GameControls";
-import {getRandomCard} from "../utils/gamelogic/getRandomCard";
+import { getRandomCard } from "../utils/gamelogic/getRandomCard";
 import GameResultModal from "../components/modals/GameResultModal";
 import {
   isBlackjack,
@@ -33,10 +26,10 @@ import HeaderWithIcons from "../components/layout/HeaderWithIcons";
 import DealerHand from "../components/gameComponents/DealerHand";
 import CurrentBetDisplay from "../components/gameComponents/CurrentBetDisplay";
 import PlayerHand from "../components/gameComponents/PlayerHand";
-import {playCardDealSound} from "../utils/PlaySound";
-import {playBackgroundMusic} from "../utils/PlaySound";
+import { playCardDealSound } from "../utils/PlaySound";
+import { playBackgroundMusic } from "../utils/PlaySound";
 
-export default function GameScreen({navigation}) {
+export default function GameScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [shopModalVisible, setShopModalVisible] = useState(false);
   const [currentBet, setCurrentBet] = useState(0);
@@ -59,9 +52,9 @@ export default function GameScreen({navigation}) {
 
   const [gameResult, setGameResult] = useState("");
 
-  const {coins, addCoins, subtractCoins} = useCoins();
+  const { coins, addCoins, subtractCoins } = useCoins();
 
-  playBackgroundMusic();
+  // playBackgroundMusic();
 
   // Deal initial cards
   const handleDeal = () => {

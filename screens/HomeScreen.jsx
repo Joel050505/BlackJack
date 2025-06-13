@@ -1,6 +1,6 @@
-import {Text, View, ImageBackground, TouchableOpacity} from "react-native";
-import {useEffect, useRef} from "react";
-import {StatusBar} from "expo-status-bar";
+import { Text, View, ImageBackground, TouchableOpacity } from "react-native";
+import { useEffect, useRef } from "react";
+import { StatusBar } from "expo-status-bar";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,15 +9,17 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import { playBackgroundMusic } from "../utils/PlaySound";
+import { Audio } from "expo-av";
 
-export default function HomeScreen({navigation}) {
+export default function HomeScreen({ navigation }) {
   // Använd useSharedValue istället för Animated.Value
   const bounceAnim = useSharedValue(0);
 
   // Skapa en animerad stil
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{translateY: bounceAnim.value}],
+      transform: [{ translateY: bounceAnim.value }],
     };
   });
 
@@ -25,8 +27,8 @@ export default function HomeScreen({navigation}) {
   useEffect(() => {
     bounceAnim.value = withRepeat(
       withSequence(
-        withTiming(-15, {duration: 1000, easing: Easing.inOut(Easing.ease)}),
-        withTiming(0, {duration: 800, easing: Easing.inOut(Easing.ease)})
+        withTiming(-15, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0, { duration: 800, easing: Easing.inOut(Easing.ease) })
       ),
       -1 // -1 betyder oändlig upprepning
     );
@@ -56,7 +58,11 @@ export default function HomeScreen({navigation}) {
         <StatusBar style="light" />
         <TouchableOpacity
           className="bg-black px-5 py-2.5 rounded-xl mt-5 items-center"
-          onPress={() => navigation.navigate("Game")}
+          onPress={() => {
+            navigation.navigate("Game");
+            Audio.setIsEnabledAsync(true);
+            playBackgroundMusic(0.01);
+          }}
         >
           <Text className="text-white font-bold text-base text-center p-2.5">
             Start Game

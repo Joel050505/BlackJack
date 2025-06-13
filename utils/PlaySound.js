@@ -1,9 +1,9 @@
-import {Audio} from "expo-av";
+import { Audio } from "expo-av";
 
 // Function that can be imported and used anywhere
 export const playSound = async (soundFile) => {
   try {
-    const {sound} = await Audio.Sound.createAsync(soundFile);
+    const { sound } = await Audio.Sound.createAsync(soundFile);
     await sound.playAsync();
 
     // Unload when finished to free memory
@@ -44,18 +44,18 @@ export const losingSound = () => {
 };
 // For kaching sound
 export const kachingSound = () => {
-  return playSound(require("../assets/sounds/kaching-sound.mp3"));
+  return playSound(require("../assets/sounds/coin-recieved.mp3"));
 };
 
 // For background music with volume control
-export const playBackgroundMusic = async (volume = 0.1) => {
+export const playBackgroundMusic = async (volume = 0.01) => {
   try {
-    const {sound} = await Audio.Sound.createAsync(
+    const { sound } = await Audio.Sound.createAsync(
       require("../assets/sounds/bg-sound.mp3"),
       {
         isLooping: true, // Make the background music loop continuously
         volume: volume, // Set lower volume (0.0 to 1.0)
-        // shouldPlay: false, // Auto-play when loaded
+        shouldPlay: true, // Auto-play when loaded
       }
     );
 
