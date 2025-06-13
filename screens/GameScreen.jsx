@@ -1,33 +1,28 @@
 import {useState} from "react";
 import {View, ImageBackground, Alert} from "react-native";
-
+import {useCoins} from "../context/CoinsContext";
 import GameMenuModal from "../components/modals/GameMenuModal";
 import ShopMenuModal from "../components/modals/ShopMenuModal";
-import {handleBackToHome} from "../utils/handleBackToHome";
-import {useCoins} from "../context/CoinsContext";
+import GameResultModal from "../components/modals/GameResultModal";
+import DealerHand from "../components/gameComponents/DealerHand";
+import PlayerHand from "../components/gameComponents/PlayerHand";
+import CurrentBetDisplay from "../components/gameComponents/CurrentBetDisplay";
+import HeaderWithIcons from "../components/layout/HeaderWithIcons";
 import ChipCollection from "../components/controls/ChipCollection";
 import {
   BettingControls,
   GameplayControls,
 } from "../components/controls/GameControls";
+import {handleBackToHome} from "../utils/handleBackToHome";
 import {getRandomCard} from "../utils/gamelogic/getRandomCard";
-import GameResultModal from "../components/modals/GameResultModal";
+import {playDealer, endGame} from "../utils/gamelogic/gameRules";
 import {
   isBlackjack,
   calculateHandValue,
 } from "../utils/gamelogic/blackJackLogic";
+import {playCardDealSound, playBackgroundMusic} from "../utils/PlaySound";
 
-import {
-  playDealer,
-  determineWinner,
-  endGame,
-} from "../utils/gamelogic/gameRules";
-import HeaderWithIcons from "../components/layout/HeaderWithIcons";
-import DealerHand from "../components/gameComponents/DealerHand";
-import CurrentBetDisplay from "../components/gameComponents/CurrentBetDisplay";
-import PlayerHand from "../components/gameComponents/PlayerHand";
-import {playCardDealSound} from "../utils/PlaySound";
-import {playBackgroundMusic} from "../utils/PlaySound";
+// import {playBackgroundMusic} from "../utils/PlaySound";
 
 export default function GameScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -50,11 +45,19 @@ export default function GameScreen({navigation}) {
   const [showLosingModal, setShowLosingModal] = useState(false);
   const [showTieModal, setShowTieModal] = useState(false);
 
+  // Game result message
   const [gameResult, setGameResult] = useState("");
 
+  // Coins context
   const {coins, addCoins, subtractCoins} = useCoins();
 
   // playBackgroundMusic();
+
+  {
+    /* ////////////////////////
+      //// GAME FUNCTIONS /////
+      //////////////////////// */
+  }
 
   // Deal initial cards
   function handleDeal() {
@@ -64,6 +67,7 @@ export default function GameScreen({navigation}) {
       return;
     }
 
+    // Check if player has enough coins for the bet
     if (coins < currentBet) {
       Alert.alert(
         "Insufficient Coins",
@@ -71,10 +75,12 @@ export default function GameScreen({navigation}) {
       );
       return;
     }
+
+    // Play card deal sound
     for (let i = 0; i < 2; i++) {
       setTimeout(() => {
         playCardDealSound();
-      }, i * 500); // 300ms delay between each sound
+      }, i * 500);
     }
     // Subtract bet from coins
     subtractCoins(currentBet);
@@ -232,7 +238,11 @@ export default function GameScreen({navigation}) {
     setGameResult("");
     setCurrentBet(0);
   }
-
+  {
+    /* ////////////////////////
+      //// BETTING SYSTEM /////
+      //////////////////////// */
+  }
   // Betting functions
   const addBet = (amount) => {
     if (coins >= amount && gamePhase === "betting") {
@@ -252,17 +262,20 @@ export default function GameScreen({navigation}) {
       className="flex-1 w-full h-full"
       resizeMode="cover"
     >
-      {/* Header with Icons */}
+      {/* ///////////////////////
+          //// HEADER SECTION ////
+          /////////////////////// */}
       <HeaderWithIcons
         coins={coins}
         onShopPress={() => setShopModalVisible(true)}
         onSettingsPress={() => setModalVisible(true)}
       />
 
-      {/* Dealer Cards Display */}
+      {/* //////////////////////
+          //// GAME BOARD ///////
+          ////////////////////// */}
       <View className="flex-1 justify-center items-center px-4 mb-10">
         {/* Dealer Cards Display */}
-
         {isPlaying && (
           <DealerHand
             dealerCards={dealerCards}
@@ -272,7 +285,6 @@ export default function GameScreen({navigation}) {
         )}
 
         {/* Current Bet Display */}
-
         <CurrentBetDisplay currentBet={currentBet} />
 
         {/* Player Cards Display */}
@@ -285,7 +297,9 @@ export default function GameScreen({navigation}) {
         )}
       </View>
 
-      {/* Game Controls */}
+      {/* ///////////////////////
+          //// GAME CONTROLS /////
+          /////////////////////// */}
       <View className="px-5 pb-10">
         {gamePhase === "betting" && (
           <>
@@ -318,11 +332,11 @@ export default function GameScreen({navigation}) {
         )}
       </View>
 
-      {/*/////////////
-      //// Modals ////
-      // ///////////// */}
+      {/* ///////////////////////
+          ////// MODALS //////////
+          /////////////////////// */}
 
-      {/*Winning Modal*/}
+      {/* Winning Modal */}
       {showWinningModal && (
         <GameResultModal
           visible={showWinningModal}
@@ -336,7 +350,7 @@ export default function GameScreen({navigation}) {
         />
       )}
 
-      {/*Losing Modal*/}
+      {/* Losing Modal */}
       {showLosingModal && (
         <GameResultModal
           visible={showLosingModal}
@@ -372,7 +386,7 @@ export default function GameScreen({navigation}) {
         currentBet={currentBet}
       />
 
-      {/* Shop modal */}
+      {/* Shop Modal */}
       <ShopMenuModal
         visible={shopModalVisible}
         onClose={() => setShopModalVisible(false)}

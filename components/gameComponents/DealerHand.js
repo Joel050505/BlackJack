@@ -49,7 +49,7 @@ export default function DealerHand({dealerCards, showDealerCard, dealerScore}) {
     <View className="items-center justify-center w-full mb-4">
       {/* Poäng */}
       <Text className="text-white text-lg font-semibold bg-black/50 px-3 py-1 rounded-lg mb-2">
-        {getVisibleDealerScore(dealerScore)}
+        Dealer: {getVisibleDealerScore(dealerScore)}
       </Text>
 
       {/* Korten */}

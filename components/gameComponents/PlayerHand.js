@@ -58,7 +58,7 @@ export default function PlayerHand({playerCards, playerScore}) {
 
       {/* Poäng */}
       <Text className="text-white text-lg font-semibold bg-black/50 px-3 py-1 mt-2 rounded-lg">
-        {playerScore}
+        Player: {playerScore}
       </Text>
     </View>
   );

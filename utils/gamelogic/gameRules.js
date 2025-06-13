@@ -67,6 +67,7 @@ export function endGame({
     case "playerBlackjack":
       payout = Math.floor(currentBet * 2.5); // Blackjack pays 2.5x (1.5x + original bet)
       setShowWinningModal(true); // Visa vinst-modal istället för Alert
+      winningSound();
       break;
 
     case "playerWin":
@@ -80,6 +81,7 @@ export function endGame({
       break;
     case "tie":
       payout = currentBet; // Return original bet
+      losingSound();
       setTimeout(() => {
         setShowTieModal(true); // Visa oavgjort-modal istället för Alert
       }, 200); // Fördröjning för att matcha animationen
