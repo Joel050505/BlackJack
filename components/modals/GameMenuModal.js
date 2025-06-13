@@ -3,7 +3,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { Audio } from "expo-av";
 import { useState } from "react";
 import Entypo from "@expo/vector-icons/Entypo";
-import { playBackgroundMusic } from "../../utils/PlaySound";
+import {
+  playBackgroundMusic,
+  pauseBackgroundMusic,
+  resumeBackgroundMusic,
+} from "../../utils/PlaySound";
 
 export default function GameMenuModal({
   visible,
@@ -17,22 +21,19 @@ export default function GameMenuModal({
     // Get the new state (opposite of current state)
     const newSoundState = !showSound;
 
-    // Update the state
-    setShowSound(newSoundState);
-
     try {
-      // If newSoundState is true, we want sounds enabled
-      // If newSoundState is false, we want sounds disabled
-      await Audio.setIsEnabledAsync(newSoundState);
-
       if (newSoundState) {
         // Sound is being turned ON
-        await playBackgroundMusic(0.1);
+        await Audio.setIsEnabledAsync(true);
+        await resumeBackgroundMusic(); // Resume if paused
+        // Set to desired volume
       } else {
-        // Sound is being turned OFF - stop music or set volume to 0
-        // This depends on your playBackgroundMusic implementation
-        await playBackgroundMusic(0);
+        // Sound is being turned OFF
+        await pauseBackgroundMusic(); // Just pause it, don't unload
       }
+
+      // Update state after operations complete
+      setShowSound(newSoundState);
     } catch (error) {
       console.error("Error toggling sound:", error);
     }

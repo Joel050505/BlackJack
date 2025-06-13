@@ -47,17 +47,41 @@ export const kachingSound = () => {
   return playSound(require("../assets/sounds/coin-recieved.mp3"));
 };
 
-// For background music with volume control
+// Add this near the top of your PlaySound.js file
+let backgroundMusicSound = null; // Store reference to background music
+
+// Modify your playBackgroundMusic function to store the reference
 export const playBackgroundMusic = async (volume = 0.01) => {
   try {
+    // If we already have background music playing, adjust volume instead of creating a new one
+    if (backgroundMusicSound) {
+      await backgroundMusicSound.setVolumeAsync(volume);
+
+      // If volume is 0, pause the sound
+      if (volume <= 0) {
+        await backgroundMusicSound.pauseAsync();
+      } else {
+        // Make sure it's playing if it was paused
+        const status = await backgroundMusicSound.getStatusAsync();
+        if (!status.isPlaying) {
+          await backgroundMusicSound.playAsync();
+        }
+      }
+      return backgroundMusicSound;
+    }
+
+    // Create new sound object if we don't have one
     const { sound } = await Audio.Sound.createAsync(
       require("../assets/sounds/bg-sound.mp3"),
       {
-        isLooping: true, // Make the background music loop continuously
-        volume: volume, // Set lower volume (0.0 to 1.0)
-        shouldPlay: true, // Auto-play when loaded
+        isLooping: true,
+        volume: volume,
+        shouldPlay: volume > 0, // Only auto-play if volume > 0
       }
     );
+
+    // Store reference
+    backgroundMusicSound = sound;
 
     // Don't unload automatically - we'll manage this separately
     return sound;
@@ -66,3 +90,83 @@ export const playBackgroundMusic = async (volume = 0.01) => {
     return null;
   }
 };
+
+// Add these new functions for controlling background music
+
+// Pause background music
+export const pauseBackgroundMusic = async () => {
+  try {
+    if (backgroundMusicSound) {
+      await backgroundMusicSound.pauseAsync();
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error pausing background music", error);
+    return false;
+  }
+};
+
+// Resume background music
+export const resumeBackgroundMusic = async () => {
+  try {
+    if (backgroundMusicSound) {
+      await backgroundMusicSound.playAsync();
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error resuming background music", error);
+    return false;
+  }
+};
+
+// Stop and unload background music
+export const stopBackgroundMusic = async () => {
+  try {
+    if (backgroundMusicSound) {
+      await backgroundMusicSound.stopAsync();
+      await backgroundMusicSound.unloadAsync();
+      backgroundMusicSound = null;
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error stopping background music", error);
+    return false;
+  }
+};
+
+// Adjust volume of background music
+export const setBackgroundMusicVolume = async (volume) => {
+  try {
+    if (backgroundMusicSound) {
+      await backgroundMusicSound.setVolumeAsync(volume);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error setting background music volume", error);
+    return false;
+  }
+};
+
+// // For background music with volume control
+// export const playBackgroundMusic = async (volume = 0.01) => {
+//   try {
+//     const { sound } = await Audio.Sound.createAsync(
+//       require("../assets/sounds/bg-sound.mp3"),
+//       {
+//         isLooping: true, // Make the background music loop continuously
+//         volume: volume, // Set lower volume (0.0 to 1.0)
+//         shouldPlay: true, // Auto-play when loaded
+//       }
+//     );
+
+//     // Don't unload automatically - we'll manage this separately
+//     return sound;
+//   } catch (error) {
+//     console.error("Error playing background music", error);
+//     return null;
+//   }
+// };
