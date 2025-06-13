@@ -1,4 +1,4 @@
-import {losingSound} from "../PlaySound";
+import {losingSound, winningSound} from "../PlaySound";
 
 export const playDealer = async ({
   dealerCards,
@@ -68,14 +68,11 @@ export function endGame({
       payout = Math.floor(currentBet * 2.5); // Blackjack pays 2.5x (1.5x + original bet)
       setShowWinningModal(true); // Visa vinst-modal istället för Alert
       break;
-    // case "playerTwentyOne":
-    //   payout = currentBet * 2;
-    //   setShowWinningModal(true);
-    //   break;
+
     case "playerWin":
     case "dealerBust":
       payout = currentBet * 2; // Regular win pays 2x (1x + original bet)
-
+      winningSound();
       setTimeout(() => {
         setShowWinningModal(true); // Visa vinst-modal istället för Alert
       }, 200); // Fördröjning för att matcha animationen
@@ -95,7 +92,7 @@ export function endGame({
       losingSound();
       setTimeout(() => {
         setShowLosingModal(true);
-      }, 200); // Visa förlust-modal istället för Alert
+      }, 200);
       break;
   }
 
@@ -134,53 +131,3 @@ export const determineWinner = (
     ...endGameParams,
   });
 };
-
-// export const endGame = ({
-//   result,
-//   currentBet,
-//   setGamePhase,
-//   setGameResult,
-//   addCoins,
-//   resetGame,
-// }) => {
-//   setGamePhase("finished");
-//   setGameResult(result);
-
-//   let payout = 0;
-//   let message = "";
-
-//   switch (result) {
-//     case "playerBlackjack":
-//       payout = Math.floor(currentBet * 2.5); // Blackjack pays 2.5x (1.5x + original bet)
-//       message = `Blackjack! You won ${payout} coins!`;
-//       break;
-//     case "playerWin":
-//     case "dealerBust":
-//       payout = currentBet * 2; // Regular win pays 2x (1x + original bet)
-//       message = `You won ${payout} coins!`;
-//       break;
-//     case "tie":
-//       payout = currentBet; // Return original bet
-//       message = `It's a tie! Your bet of ${currentBet} coins is returned.`;
-//       break;
-//     case "playerBust":
-//     case "dealerWin":
-//     case "dealerBlackjack":
-//       payout = 0; // Player loses bet (already subtracted)
-//       message = `You lost ${currentBet} coins.`;
-//       break;
-//   }
-
-//   if (payout > 0) {
-//     addCoins(payout);
-//   }
-
-//   Alert.alert("Game Over", message, [
-//     {
-//       text: "New Game",
-//       onPress: () => {
-//         resetGame();
-//       },
-//     },
-//   ]);
-// };

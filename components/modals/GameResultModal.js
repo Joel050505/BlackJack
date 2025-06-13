@@ -24,7 +24,6 @@ export default function GameResultModal({
   if (gameResult === "playerBlackjack") {
     payout = Math.floor(currentBet * 2.5);
     title = "BLACKJACK!";
-    // message = `You won ${payout} coins!`;
     message = (
       <Text>
         You won <Text className="font-bold">{payout}</Text> coins!
@@ -34,7 +33,6 @@ export default function GameResultModal({
   } else if (gameResult === "playerWin" || gameResult === "dealerBust") {
     payout = currentBet * 2;
     title = "YOU WIN! ";
-    // message = `You won ${payout} coins!\n\n Dealer score: ${dealerScore} \n Player score: ${playerScore}`;
     message = (
       <Text>
         You won <Text className="font-bold">{payout}</Text> coins!
@@ -45,7 +43,6 @@ export default function GameResultModal({
   } else if (gameResult === "tie") {
     payout = currentBet;
     title = "TIE GAME!";
-    // message = `Your bet of ${currentBet} coins is returned.`;
     message = (
       <Text>
         Your bet of <Text className="font-bold ">{currentBet}</Text> coins is
@@ -55,7 +52,6 @@ export default function GameResultModal({
   } else if (gameResult === "playerBust" || gameResult === "dealerWin") {
     isWin = false;
     title = "YOU LOST!";
-    // message = `You lost ${currentBet} coins.\n\n Dealer score: ${dealerScore} \n Player score: ${playerScore}`;
     message = (
       <Text>
         You lost <Text className="font-bold">{currentBet}</Text> coins.
@@ -65,7 +61,6 @@ export default function GameResultModal({
   } else if (gameResult === "dealerBlackjack") {
     isWin = false;
     title = "DEALER BLACKJACK!";
-    // message = `You lost ${currentBet} coins.`;
     message = (
       <Text>
         You lost <Text className="font-bold">{currentBet}</Text> coins.
@@ -88,9 +83,12 @@ export default function GameResultModal({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View className="flex-1 bg-black/50 justify-center items-center p-10">
+      <View
+        className="flex-1 bg-black/50 justify-center
+       items-center p-10  "
+      >
         <View
-          className={`bg-amber-50 rounded-xl w-full p-6 border-4 ${
+          className={`bg-amber-50 rounded-xl w-full p-6 mb-32 border-4 ${
             isWin ? "border-orange-600" : "border-rose-500"
           }`}
         >
@@ -110,15 +108,10 @@ export default function GameResultModal({
             onPress={handlePlayAgain}
             className={`bg-blue-500 py-3 rounded-lg`}
           >
-            {/* isWin ? "bg-blue-500" : "bg-blue-500" */}
             <Text className="text-white text-center font-bold text-lg">
               Play Again
             </Text>
           </TouchableOpacity>
-
-          {/* <TouchableOpacity onPress={onClose} className="mt-3">
-            <Text className="text-gray-500 text-center">Close</Text>
-          </TouchableOpacity> */}
         </View>
       </View>
     </Modal>
