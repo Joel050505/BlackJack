@@ -44,7 +44,7 @@ export const losingSound = () => {
 };
 // For kaching sound
 export const kachingSound = () => {
-  return playSound(require("../assets/sounds/coin-recieved.mp3"));
+  return playSound(require("../assets/sounds/kaching-sound.mp3"));
 };
 
 // Add this near the top of your PlaySound.js file
