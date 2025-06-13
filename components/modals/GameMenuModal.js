@@ -13,10 +13,29 @@ export default function GameMenuModal({
 }) {
   const [showSound, setShowSound] = useState(true);
 
-  const onMute = () => {
-    setShowSound(!showSound);
-    Audio.setIsEnabledAsync(showSound);
-    playBackgroundMusic(showSound ? 0.1 : 0);
+  const onMute = async () => {
+    // Get the new state (opposite of current state)
+    const newSoundState = !showSound;
+
+    // Update the state
+    setShowSound(newSoundState);
+
+    try {
+      // If newSoundState is true, we want sounds enabled
+      // If newSoundState is false, we want sounds disabled
+      await Audio.setIsEnabledAsync(newSoundState);
+
+      if (newSoundState) {
+        // Sound is being turned ON
+        await playBackgroundMusic(0.1);
+      } else {
+        // Sound is being turned OFF - stop music or set volume to 0
+        // This depends on your playBackgroundMusic implementation
+        await playBackgroundMusic(0);
+      }
+    } catch (error) {
+      console.error("Error toggling sound:", error);
+    }
   };
 
   return (
@@ -36,13 +55,13 @@ export default function GameMenuModal({
             <Ionicons name="close-circle" size={28} color="white" />
           </TouchableOpacity>
 
-          {/* <TouchableOpacity className="absolute left-3 top-3" onPress={onMute}>
+          <TouchableOpacity className="absolute left-3 top-3" onPress={onMute}>
             {showSound ? (
               <Entypo name="sound" size={24} color="white" />
             ) : (
               <Entypo name="sound-mute" size={24} color="white" />
             )}
-          </TouchableOpacity> */}
+          </TouchableOpacity>
           <Text className="text-white text-xl font-bold mb-8 mt-4">
             Game Settings
           </Text>
