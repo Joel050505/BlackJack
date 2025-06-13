@@ -4,16 +4,18 @@ import {Audio} from "expo-av";
 import {useState} from "react";
 import Entypo from "@expo/vector-icons/Entypo";
 import {
-  playBackgroundMusic,
   pauseBackgroundMusic,
   resumeBackgroundMusic,
 } from "../../utils/PlaySound";
+import {handleNewGame} from "../../utils/handleNewGame";
 
 export default function GameMenuModal({
   visible,
   onClose,
-  onBackToMenu,
+  onBackToHome,
   resetGame,
+  gamePhase,
+  currentBet,
 }) {
   const [showSound, setShowSound] = useState(true);
 
@@ -65,7 +67,7 @@ export default function GameMenuModal({
             )}
           </TouchableOpacity>
           <Text className="text-white text-xl font-bold mb-8 mt-4">
-            Game Settings
+            Game Menu
           </Text>
 
           {/* Continue playing button */}
@@ -81,30 +83,36 @@ export default function GameMenuModal({
           </TouchableOpacity>
 
           {/* New Game button */}
-          <TouchableOpacity
-            className="bg-orange-500 py-2 rounded-lg mb-4 w-full items-center"
-            onPress={() => {
-              resetGame();
-              onClose();
-            }}
-          >
-            <View className="flex-row items-center justify-center">
-              <Text className="text-white font-bold text-lg ml-2">
-                New Game
-              </Text>
-            </View>
-          </TouchableOpacity>
+          {gamePhase !== "betting" && (
+            <TouchableOpacity
+              className="bg-orange-500 py-2 rounded-lg mb-4 w-full items-center"
+              onPress={() => {
+                handleNewGame({
+                  gamePhase,
+                  currentBet,
+                  resetGame,
+                  setModalVisible: onClose,
+                });
+              }}
+            >
+              <View className="flex-row items-center justify-center">
+                <Text className="text-white font-bold text-lg ml-2">
+                  New Game
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
 
           {/* Back to main menu button */}
           <TouchableOpacity
             className="bg-red-600 py-2 rounded-lg mb-4 w-full items-center"
             onPress={() => {
-              onBackToMenu();
+              onBackToHome();
               Audio.setIsEnabledAsync(false); // Stop background music
             }}
           >
             <View className="flex-row items-center justify-center">
-              <Ionicons name="arrow-back" size={24} color="white" />
+              {/* <Ionicons name="arrow-back" size={24} color="white" /> */}
               <Text className="text-white font-bold text-lg ml-2">
                 Back to Home
               </Text>

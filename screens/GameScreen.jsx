@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { View, ImageBackground, Alert } from "react-native";
+import {useState} from "react";
+import {View, ImageBackground, Alert} from "react-native";
 
 import GameMenuModal from "../components/modals/GameMenuModal";
 import ShopMenuModal from "../components/modals/ShopMenuModal";
-import { handleBackConfirmation } from "../utils/handleBackConfirmation";
-import { useCoins } from "../context/CoinsContext";
+import {handleBackToHome} from "../utils/handleBackToHome";
+import {useCoins} from "../context/CoinsContext";
 import ChipCollection from "../components/controls/ChipCollection";
 import {
   BettingControls,
   GameplayControls,
 } from "../components/controls/GameControls";
-import { getRandomCard } from "../utils/gamelogic/getRandomCard";
+import {getRandomCard} from "../utils/gamelogic/getRandomCard";
 import GameResultModal from "../components/modals/GameResultModal";
 import {
   isBlackjack,
@@ -26,10 +26,10 @@ import HeaderWithIcons from "../components/layout/HeaderWithIcons";
 import DealerHand from "../components/gameComponents/DealerHand";
 import CurrentBetDisplay from "../components/gameComponents/CurrentBetDisplay";
 import PlayerHand from "../components/gameComponents/PlayerHand";
-import { playCardDealSound } from "../utils/PlaySound";
-import { playBackgroundMusic } from "../utils/PlaySound";
+import {playCardDealSound} from "../utils/PlaySound";
+import {playBackgroundMusic} from "../utils/PlaySound";
 
-export default function GameScreen({ navigation }) {
+export default function GameScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [shopModalVisible, setShopModalVisible] = useState(false);
   const [currentBet, setCurrentBet] = useState(0);
@@ -52,12 +52,12 @@ export default function GameScreen({ navigation }) {
 
   const [gameResult, setGameResult] = useState("");
 
-  const { coins, addCoins, subtractCoins } = useCoins();
+  const {coins, addCoins, subtractCoins} = useCoins();
 
   // playBackgroundMusic();
 
   // Deal initial cards
-  const handleDeal = () => {
+  function handleDeal() {
     if (currentBet === 0) {
       Alert.alert("No Bet", "Please place a bet before dealing!");
 
@@ -111,7 +111,7 @@ export default function GameScreen({ navigation }) {
           setGameResult,
           addCoins,
           resetGame,
-          setShowWinningModal, // Lägg till dessa
+          setShowWinningModal,
           setShowLosingModal,
           setShowTieModal,
         });
@@ -144,7 +144,7 @@ export default function GameScreen({ navigation }) {
         setShowTieModal,
       });
     }
-  };
+  }
 
   // Player hits (takes another card)
   function handleHit() {
@@ -186,8 +186,6 @@ export default function GameScreen({ navigation }) {
         setShowLosingModal,
         setShowTieModal,
       });
-
-      //   handleStand();
     }
   }
 
@@ -319,7 +317,10 @@ export default function GameScreen({ navigation }) {
           />
         )}
       </View>
-      {/* Modals */}
+
+      {/*/////////////
+      //// Modals ////
+      // ///////////// */}
 
       {/*Winning Modal*/}
       {showWinningModal && (
@@ -365,8 +366,10 @@ export default function GameScreen({ navigation }) {
       <GameMenuModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onBackToMenu={() => handleBackConfirmation(setModalVisible, navigation)}
+        onBackToHome={() => handleBackToHome(setModalVisible, navigation)}
         resetGame={resetGame}
+        gamePhase={gamePhase}
+        currentBet={currentBet}
       />
 
       {/* Shop modal */}

@@ -1,6 +1,6 @@
 import {Alert} from "react-native";
 
-export function handleBackConfirmation(setModalVisible, navigation) {
+export function handleBackToHome(setModalVisible, navigation) {
   // Stänger modalen
   setModalVisible(false);
 
