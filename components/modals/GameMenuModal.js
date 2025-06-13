@@ -1,7 +1,7 @@
-import { Text, View, Modal, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { Audio } from "expo-av";
-import { useState } from "react";
+import {Text, View, Modal, TouchableOpacity} from "react-native";
+import {Ionicons} from "@expo/vector-icons";
+import {Audio} from "expo-av";
+import {useState} from "react";
 import Entypo from "@expo/vector-icons/Entypo";
 import {
   playBackgroundMusic,
@@ -56,6 +56,7 @@ export default function GameMenuModal({
             <Ionicons name="close-circle" size={28} color="white" />
           </TouchableOpacity>
 
+          {/* Mute/Unmute button */}
           <TouchableOpacity className="absolute left-3 top-3" onPress={onMute}>
             {showSound ? (
               <Entypo name="sound" size={24} color="white" />
@@ -84,6 +85,7 @@ export default function GameMenuModal({
             className="bg-orange-500 py-2 rounded-lg mb-4 w-full items-center"
             onPress={() => {
               resetGame();
+              onClose();
             }}
           >
             <View className="flex-row items-center justify-center">
