@@ -1,6 +1,6 @@
-import {useState} from "react";
-import {View, ImageBackground, Alert} from "react-native";
-import {useCoins} from "../context/CoinsContext";
+import { useState } from "react";
+import { View, ImageBackground, Alert } from "react-native";
+import { useCoins } from "../context/CoinsContext";
 import GameMenuModal from "../components/modals/GameMenuModal";
 import ShopMenuModal from "../components/modals/ShopMenuModal";
 import GameResultModal from "../components/modals/GameResultModal";
@@ -13,18 +13,18 @@ import {
   BettingControls,
   GameplayControls,
 } from "../components/controls/GameControls";
-import {handleBackToHome} from "../utils/handleBackToHome";
-import {getRandomCard} from "../utils/gamelogic/getRandomCard";
-import {playDealer, endGame} from "../utils/gamelogic/gameRules";
+import { handleBackToHome } from "../utils/handleBackToHome";
+import { getRandomCard } from "../utils/gamelogic/getRandomCard";
+import { playDealer, endGame } from "../utils/gamelogic/gameRules";
 import {
   isBlackjack,
   calculateHandValue,
 } from "../utils/gamelogic/blackJackLogic";
-import {playCardDealSound, playBackgroundMusic} from "../utils/PlaySound";
+import { playCardDealSound, playBackgroundMusic } from "../utils/PlaySound";
 
 // import {playBackgroundMusic} from "../utils/PlaySound";
 
-export default function GameScreen({navigation}) {
+export default function GameScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [shopModalVisible, setShopModalVisible] = useState(false);
   const [currentBet, setCurrentBet] = useState(0);
@@ -49,7 +49,7 @@ export default function GameScreen({navigation}) {
   const [gameResult, setGameResult] = useState("");
 
   // Coins context
-  const {coins, addCoins, subtractCoins} = useCoins();
+  const { coins, addCoins, subtractCoins } = useCoins();
 
   // playBackgroundMusic();
 

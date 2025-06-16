@@ -1,4 +1,4 @@
-import {Alert} from "react-native";
+import { Alert } from "react-native";
 
 export function handleBackToHome(setModalVisible, navigation) {
   // Stänger modalen
@@ -14,7 +14,9 @@ export function handleBackToHome(setModalVisible, navigation) {
       },
       {
         text: "Yes",
-        onPress: () => navigation.navigate("Home"),
+        onPress: () => {
+          navigation.navigate("Home");
+        },
       },
     ]
   );

@@ -1,13 +1,13 @@
-import {Text, View, Modal, TouchableOpacity} from "react-native";
-import {Ionicons} from "@expo/vector-icons";
-import {Audio} from "expo-av";
-import {useState} from "react";
+import { Text, View, Modal, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Audio } from "expo-av";
+import { useState } from "react";
 import Entypo from "@expo/vector-icons/Entypo";
 import {
   pauseBackgroundMusic,
   resumeBackgroundMusic,
 } from "../../utils/PlaySound";
-import {handleNewGame} from "../../utils/handleNewGame";
+import { handleNewGame } from "../../utils/handleNewGame";
 
 export default function GameMenuModal({
   visible,
@@ -108,7 +108,6 @@ export default function GameMenuModal({
             className="bg-red-600 py-2 rounded-lg mb-4 w-full items-center"
             onPress={() => {
               onBackToHome();
-              Audio.setIsEnabledAsync(false); // Stop background music
             }}
           >
             <View className="flex-row items-center justify-center">

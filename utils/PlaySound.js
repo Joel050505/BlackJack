@@ -91,8 +91,6 @@ export const playBackgroundMusic = async (volume = 0.01) => {
   }
 };
 
-// Add these new functions for controlling background music
-
 // Pause background music
 export const pauseBackgroundMusic = async () => {
   try {
@@ -150,23 +148,3 @@ export const setBackgroundMusicVolume = async (volume) => {
     return false;
   }
 };
-
-// // For background music with volume control
-// export const playBackgroundMusic = async (volume = 0.01) => {
-//   try {
-//     const { sound } = await Audio.Sound.createAsync(
-//       require("../assets/sounds/bg-sound.mp3"),
-//       {
-//         isLooping: true, // Make the background music loop continuously
-//         volume: volume, // Set lower volume (0.0 to 1.0)
-//         shouldPlay: true, // Auto-play when loaded
-//       }
-//     );
-
-//     // Don't unload automatically - we'll manage this separately
-//     return sound;
-//   } catch (error) {
-//     console.error("Error playing background music", error);
-//     return null;
-//   }
-// };
