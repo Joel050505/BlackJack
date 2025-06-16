@@ -1,4 +1,4 @@
-import {losingSound, winningSound} from "../PlaySound";
+import { losingSound, winningSound } from "../PlaySound";
 
 export const playDealer = async ({
   dealerCards,
@@ -65,14 +65,14 @@ export function endGame({
 
   switch (result) {
     case "playerBlackjack":
-      payout = Math.floor(currentBet * 2.5); // Blackjack pays 2.5x (1.5x + original bet)
-      setShowWinningModal(true); // Visa vinst-modal istället för Alert
+      payout = Math.floor(currentBet * 2.5); // Blackjack pays 2.5x
+      setShowWinningModal(true);
       winningSound();
       break;
 
     case "playerWin":
     case "dealerBust":
-      payout = currentBet * 2; // Regular win pays 2x (1x + original bet)
+      payout = currentBet * 2; // Regular win pays 2x
       winningSound();
       setTimeout(() => {
         setShowWinningModal(true); // Visa vinst-modal istället för Alert
